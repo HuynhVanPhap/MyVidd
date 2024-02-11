@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+ node:
+  container_name: "MyVidd"
+  build:
+   dockerfile: "Dockerfile"
+   context: "./.docker/node/"
+  hostname: "my-vidd"
+  tty: true
+  working_dir: '/app'
+  volumes:
+   - "./:/app"
+  ports:
+   - "3333:3000"
+   - "9229:9229"
+  environment:
+   - "CHOKIDAR_USEPOLLING=true"
+  networks:
+   - "my-vidd-network"
+ mongod:
+  container_name: "MyViddMongod"
+  image: "mongo:6.0"
+  restart: "no"
+  volumes:
+   - "./.docker/mongo/mongod.conf:/etc/mongod.conf"
+   - "./.docker/data:/data/db"
+  ports:
+   - "27017:27017"
+  environment:
+   - "MONGO_INITDB_ROOT_USERNAME=admin"
+   - "MONGO_INITDB_ROOT_PASSWORD=admin"
+  networks:
+   - "my-vidd-network"
+ mongo-express:
+  container_name: "MyViddMongoExpress"
+  image: "mongo-express:1.0.0-alpha.4"
+  restart: "no"
+  ports:
+   - "8081:8081"
+  environment:
+   - "ME_CONFIG_MONGODB_SERVER=MyViddMongod"
+   - "ME_CONFIG_MONGODB_PORT=27017"
+   - "ME_CONFIG_MONGODB_ENABLE_ADMIN=true"
+   - "ME_CONFIG_MONGODB_ADMINUSERNAME=admin"
+   - "ME_CONFIG_MONGODB_ADMINPASSWORD=admin"
+   - "ME_CONFIG_BASICAUTH_USERNAME=admin"
+   - "ME_CONFIG_BASICAUTH_PASSWORD=admin"
+  depends_on:
+   - "mongod"
+  networks:
+   - "my-vidd-network"
+
+networks:
+ my-vidd-network:
+  name: "my-vidd-network"
+  driver: "bridge"

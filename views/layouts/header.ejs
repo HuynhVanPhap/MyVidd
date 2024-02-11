@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MyVidd</title>
+        <link rel="stylesheet" href="/public/vendor/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/public/css/alertify.min.css">
+        <link rel="stylesheet" href="/public/css/macOSNotif.min.css">
+        <link rel="stylesheet" href="/public/css/osahan.css">
+        <link rel="stylesheet" href="/public/css/video-js.css">
+        <link rel="stylesheet" href="/public/css/x0popup.min.css">
+        <link rel="stylesheet" href="/public/vendor/fontawesome-free/css/all.min.css">
+        <link rel="stylesheet" href="/public/css/custom.css">
+    </head>
+
+    <body>
+        <%
+        months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ];
+
+        baseUrl = 'http://localhost:3333/';
+        %>
+        <script type="text/javascript">
+            const months = [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+            ];
+
+            const baseUrl = 'http://localhost:3333/';
+        </script>
+        <nav class="navbar navbar-expland-lg navbar-dark bg-dark">
+            <div class="container">
+                <a href="/" class="navbar-brand">
+                    Video Streaming
+                </a>
+                <div id="navbarResponsive">
+                    <ul class="navbar-nav navbar-auth ml-auto">
+                        <% if (typeof isLogin !== 'undefined' && isLogin) { %>
+                            <li class="nav-item">
+                                <a href="/upload" class="nav-link">
+                                    Upload Video
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/logout" class="nav-link">
+                                    Logout
+                                </a>
+                            </li>
+                        <% } else { %>
+                            <li class="nav-item">
+                                <a href="/login" class="nav-link">
+                                    Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/signup" class="nav-link">
+                                    SignUp
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        
+        <div class="d-flex" id="wrapper">

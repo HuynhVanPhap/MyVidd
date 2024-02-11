@@ -1,0 +1,84 @@
+<%- include("layouts/header") %>
+    <%
+        const title = (typeof form != 'undefined' && form?.title != '') ? form.title : '';
+        const description = (typeof form != 'undefined' && form?.description != '') ? form.description : '';
+        const tags = (typeof form != 'undefined' && form?.tags != '') ? form.tags : '';
+    %>
+
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-md-12">
+                <h1>Upload Video</h1>
+
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="video">Select Video</label>
+                        <input type="file" name="video" class="form-control-file" accept="video/*">
+                        <% if (typeof errors !== 'undefined' && errors?.video?.msg != "") { %>
+                            <div class="error invalid-feedback" style="display: inline;">
+                                <%= errors?.video?.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thumbnail">Select Thumbnail</label>
+                        <input type="file" name="thumbnail" class="form-control-file" accept="image/*">
+                        <% if (typeof errors !== 'undefined' && errors?.thumbnail?.msg != "") { %>
+                            <div class="error invalid-feedback" style="display: inline;">
+                                <%= errors?.thumbnail?.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" name="title" class="form-control" value="<%= title %>">
+                        <% if (typeof errors !== 'undefined' && errors?.title?.msg != "") { %>
+                            <div class="error invalid-feedback" style="display: inline;">
+                                <%= errors?.title?.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea type="text" name="description" class="form-control"><%= description %></textarea>
+                        <% if (typeof errors !== 'undefined' && errors?.description?.msg != "") { %>
+                            <div class="error invalid-feedback" style="display: inline;">
+                                <%= errors?.description?.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags">Tags</label>
+                        <input type="text" name="tags" class="form-control" value="<%= tags %>">
+                        <% if (typeof errors !== 'undefined' && errors?.tags?.msg != "") { %>
+                            <div class="error invalid-feedback" style="display: inline;">
+                                <%= errors?.tags?.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select class="form-control" name="category">
+                            <option value="technology">Technology</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="education">Education</option>
+                            <option value="funny">Funny</option>
+                        </select>
+                        <% if (typeof errors !== 'undefined' && errors?.category?.msg != "") { %>
+                            <div class="error invalid-feedback" style="display: inline;">
+                                <%= errors?.category?.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+<%- include("layouts/footer") %>

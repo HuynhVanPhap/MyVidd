@@ -1,0 +1,30 @@
+{
+  "name": "my-vidd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --inspect=127.0.0.1:9229 index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "huynhvanphap198@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.0.1",
+    "formidable": "^3.5.1",
+    "fs-extra": "^11.2.0",
+    "get-video-duration": "^4.1.0",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.1.1",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "type": "module"
+}
