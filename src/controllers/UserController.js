@@ -45,9 +45,7 @@ export default class UserController {
     }
 
     logout(req, res) {
-        req.session.destroy(error => {
-            console.log(`Error Logout: ${error}`);
-        });
+        req.session.destroy();
         res.redirect('/');
     }
 

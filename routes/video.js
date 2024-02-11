@@ -15,4 +15,8 @@ router.post('/upload', useMulter().fields([
 
 router.get('/watch/:watch', videoController.watch);
 
+router.post('/video/do-like', videoController.doLike);
+
+router.post('/video/do-dislike', videoController.doDisLike);
+
 export default router;
