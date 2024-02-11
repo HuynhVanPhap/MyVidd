@@ -130,3 +130,5 @@ dist
 .pnp.*
 
 .docker/data/**
+public/thumbnails/**
+public/videos/**

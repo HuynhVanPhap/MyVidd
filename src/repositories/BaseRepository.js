@@ -26,6 +26,6 @@ export default class BaseRepository {
     async update(id, params) {
         return await this.model.updateOne({ _id: id }, params).exec();
     }
-
+    
     delete() {}
 }

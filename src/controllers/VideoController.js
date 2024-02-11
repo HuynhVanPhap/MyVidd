@@ -112,6 +112,12 @@ export default class VideoController {
             if(video === null) {
                 res.send('Video not found !');
             } else {
+                videoRepository.update(video._id, {
+                    $inc: {
+                        "views": 1
+                    }
+                });
+
                 res.render("video/watch", {
                     isLogin: req.session.user_id ? true : false,
                     video: video
@@ -119,5 +125,79 @@ export default class VideoController {
             }
         })
         .catch(err => console.log(`Error when get video watch ${err}`));
+    }
+
+    doLike(req, res) {
+        if (req.session.user_id) {
+            videoRepository.getWhere({
+                $and: [{
+                    '_id': req.body.videoId,
+                }, {
+                    'likers._id': req.session.user_id
+                }]
+            }).then(video => {
+                if (video == null) {
+                    videoRepository.update(req.body.videoId, {
+                        $push: {
+                            likers: {
+                                _id: req.session.user_id,
+                            }
+                        }
+                    }).then(data => {
+                        res.json({
+                            status: 'success',
+                            message: 'Video has been liked'
+                        });
+                    }).catch(err => console.log(`Error when liked video ${err}`));
+                } else {
+                    res.json({
+                        status: 'error',
+                        message: 'Already liked this video'
+                    });
+                }
+            }).catch(err => console.log(`Error when found video ${err}`));
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login !'
+            });
+        }
+    }
+
+    doDisLike(req, res) {
+        if (req.session.user_id) {
+            videoRepository.getWhere({
+                $and: [{
+                    '_id': req.body.videoId,
+                }, {
+                    'dislikers._id': req.session.user_id
+                }]
+            }).then(video => {
+                if (video == null) {
+                    videoRepository.update(req.body.videoId, {
+                        $push: {
+                            dislikers: {
+                                _id: req.session.user_id,
+                            }
+                        }
+                    }).then(data => {
+                        res.json({
+                            status: 'success',
+                            message: 'Video has been liked'
+                        });
+                    }).catch(err => console.log(`Error when disliked video ${err}`));
+                } else {
+                    res.json({
+                        status: 'error',
+                        message: 'Already disliked this video'
+                    });
+                }
+            }).catch(err => console.log(`Error when found video ${err}`));
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login !'
+            });
+        }
     }
 }
