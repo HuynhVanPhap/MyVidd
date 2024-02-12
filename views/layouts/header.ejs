@@ -59,6 +59,78 @@
                 <div id="navbarResponsive">
                     <ul class="navbar-nav navbar-auth ml-auto">
                         <% if (typeof isLogin !== 'undefined' && isLogin) { %>
+                            <script>
+                                function readNotification(self) {
+                                    const _id = self.getAttribute('data-id');
+                                    const ajax = new XMLHttpRequest();
+                                    
+                                    ajax.open('POST', '/user/read-notification', true);
+                                    ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                                    ajax.onreadystatechange = function() {
+                                        if (this.readyState == 4 && this.status == 200) {
+                                            const response = JSON.parse(this.responseText);
+
+                                            if (response.status == 'error') {
+                                                alert(response.message);
+                                            }
+                                        }
+                                    }
+
+                                    ajax.send(`notificationId=${_id}`);
+                                    return true;
+                                }
+
+                                const ajax = new XMLHttpRequest();
+
+                                ajax.open("GET", '/user/get-user', true);
+
+                                ajax.onreadystatechange = function() {
+                                    if (this.readyState == 4 && this.status == 200) {
+                                        let html;
+                                        const response = JSON.parse(this.responseText);
+
+                                        window.user.notification = window.user.notification.reverse();
+
+                                        window.user.notification.forEach(notification => {
+                                            if (!notification.is_read) {
+                                                if (notification.type == 'new_comment') {
+                                                    html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="'
+                                                        + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
+                                                }
+                                            }
+                                        });
+
+                                        document.getElementById("unread-notifications").innerHTML = html;
+                                    } else {
+                                        alert(response.message);
+                                    }
+                                }
+
+                                ajax.send();
+                            </script>
+
+                            <li class="nav-item">
+                                <div class="dropdown">
+                                    <button
+                                        type="button"
+                                        id="dropdownMenuButton"
+                                        class="btn btn-secondary dropdown-toggle"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                    >
+                                        <i class="fa fa-bell fa-fw" style="color: white;"></i>
+                                    </button>
+
+                                    <div
+                                        class="dropdown-menu"
+                                        id="unread-notifications"
+                                        aria-labelledby="dropdownMenuButton"
+                                    ></div>
+                                </div>
+                            </li>
+
                             <li class="nav-item">
                                 <a href="/upload" class="nav-link">
                                     Upload Video

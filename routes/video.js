@@ -19,4 +19,9 @@ router.post('/video/do-like', videoController.doLike);
 
 router.post('/video/do-dislike', videoController.doDisLike);
 
+router.post('/video/comment', videoController.comment);
+
+router.post('/video/reply', videoController.reply);
+
+
 export default router;

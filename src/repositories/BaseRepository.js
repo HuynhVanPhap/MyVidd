@@ -27,5 +27,15 @@ export default class BaseRepository {
         return await this.model.updateOne({ _id: id }, params).exec();
     }
     
-    delete() {}
+    async updateWhere(where, params) {
+        return await this.model.updateOne(where, params).exec();
+    }
+
+    async findAndUpdate(id, params) {
+        return await this.model.findOneAndUpdate({ _id: id }, params).exec();
+    }
+
+    async findWhereAndUpdate(where, params) {
+        return await this.model.findOneAndUpdate(where, params).exec();
+    }
 }
