@@ -1,5 +1,6 @@
 import fse from 'fs-extra';
 import { getVideoDurationInSeconds } from 'get-video-duration';
+import mongoose from 'mongoose';
 import useValidationResult from '../hook/useValidationResult.js';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from "../repositories/VideoRepository.js";
@@ -193,6 +194,126 @@ export default class VideoController {
                     });
                 }
             }).catch(err => console.log(`Error when found video ${err}`));
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login !'
+            });
+        }
+    }
+
+    comment(req, res) {
+        if (req.session.user_id) {
+            userRepository.getById(req.session.user_id).then(user => {
+                videoRepository.findAndUpdate(req.body.videoId, {
+                    $push: {
+                        comments: {
+                            _id: new mongoose.mongo.ObjectId(),
+                            user: {
+                                _id: user._id,
+                                name: user.name,
+                                image: user.image
+                            },
+                            comment: req.body.comment,
+                            createAt: new Date().getTime(),
+                            replies: [],
+                        } 
+                    }
+                }).then(data => {
+                    const channelId = data.user._id;
+
+                    userRepository.findAndUpdate(channelId, {
+                        $push: {
+                            notification: {
+                                _id: new mongoose.mongo.ObjectId(),
+                                type: 'new_comment',
+                                content: req.body.comment,
+                                is_read: false,
+                                video_watch: data.watch,
+                                user: {
+                                    _id: user._id,
+                                    name: user.name,
+                                    image: user.image
+                                }
+                            }
+                        }
+                    });
+
+                    res.json({
+                        status: 'success',
+                        message: 'Comment has been posted !',
+                        user: {
+                            _id: user._id,
+                            name: user.name,
+                            image: user.image
+                        }
+                    })
+                }).catch(err => console.log(`Error when post comment ${err}`));
+            }).catch(err => console.log(err));
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login !'
+            });
+        }
+    }
+
+    reply(req, res) {
+        if (req.session.user_id) {
+            const reply = req.body.reply;
+            const commentId = req.body.commentId;
+            
+            userRepository.getById(req.session.user_id).then(user => {
+                videoRepository.findWhereAndUpdate({
+                    $and: [{
+                        "comments._id": new mongoose.mongo.ObjectId(commentId)
+                    }]
+                }, {
+                    $push: {
+                        "comments.$.replies": {
+                            _id: new mongoose.mongo.ObjectId(),
+                            user: {
+                                _id: user._id,
+                                name: user.name,
+                                image: user.image,
+                            },
+                            reply: reply,
+                            createAt: new Date().getTime()
+                        }
+                    }
+                }).then((video) => {
+                    video.comments.forEach(comment => {
+                        if (comment._id == commentId) {
+                            userRepository.update(comment.user._id, {
+                                $push: {
+                                    notification: {
+                                        _id: new mongoose.mongo.ObjectId(),
+                                        type: 'new_reply',
+                                        content: reply,
+                                        is_read: false,
+                                        video_watch: video.watch,
+                                        user: {
+                                            _id: user._id,
+                                            name: user.name,
+                                            image: user.image,
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    res.json({
+                        status: 'success',
+                        message: 'Reply has been posted',
+                        user: {
+                            _id: user._id,
+                            name: user.name,
+                            image: user.image,
+                        }
+                    });
+                }).catch(err => `Error when post reply ${err}`);
+            }).catch(err => console.log(err));
         } else {
             res.json({
                 status: 'error',

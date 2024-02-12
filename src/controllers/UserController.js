@@ -79,4 +79,49 @@ export default class UserController {
             res.redirect('/login');
         }).catch(error => console.log(error));
     }
+
+    getUser(req, res) {
+        if (req.session.user_id) {
+            userRepository.getById(req.session.user_id).then(user => {
+                delete user.password;
+
+                res.json({
+                    status: 'success',
+                    message: 'User has been fetched',
+                    user: user,
+                });
+            });
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login to perform this action.'
+            });
+        }
+    }
+
+    readNotification(req, res) {
+        if (req.session.user_id) {
+            userRepository.updateWhere({
+                $and: [{
+                    _id: req.session.user_id,
+                }, {
+                    "notification._id": req.body.notificationId,
+                }]
+            }, {
+                $set: {
+                    "notification.$.is_read": true,
+                }
+            }).then(data => {
+                res.json({
+                    status: 'success',
+                    message: 'Notification has been marked as read.'
+                });
+            }).catch(err => console.log(err));
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login to perform this action.'
+            });
+        }
+    }
 }
