@@ -7,4 +7,7 @@ const userController = new UserController();
 router.get('/get-user', userController.getUser);
 
 router.post('/read-notification', userController.readNotification);
+
+router.post('/subscribe', userController.subscribe);
+
 export default router;
