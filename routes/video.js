@@ -23,5 +23,6 @@ router.post('/video/comment', videoController.comment);
 
 router.post('/video/reply', videoController.reply);
 
+router.get('/video/related/:category/:videoId', videoController.related);
 
 export default router;
