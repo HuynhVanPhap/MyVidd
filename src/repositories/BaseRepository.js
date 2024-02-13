@@ -38,4 +38,8 @@ export default class BaseRepository {
     async findWhereAndUpdate(where, params) {
         return await this.model.findOneAndUpdate(where, params).exec();
     }
+
+    async findMany(where) {
+        return await this.model.find(where).exec();
+    }
 }

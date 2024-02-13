@@ -321,4 +321,26 @@ export default class VideoController {
             });
         }
     }
+
+    related(req, res) {
+        videoRepository.findMany({
+            $and: [{
+                category: req.params.category
+            }, {
+                _id: {
+                    $ne: new mongoose.mongo.ObjectId(req.params.videoId)
+                }
+            }]
+        }).then(videos => {
+            // Shuffle videos
+            // for (let i = 0; i < videos.length; i++) {
+            //     const x = videos[i];
+            //     const y = Math.floor(Math.random() + (i+1));
+            //     videos[i] = videos[y];
+            //     videos[y] = x;
+            // }
+
+            res.json(videos);
+        }).catch(err => console.log(err));
+    }
 }

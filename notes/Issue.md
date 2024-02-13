@@ -54,3 +54,10 @@
 * https://stackoverflow.com/questions/65755094/promise-then-returns-promise-pending
 * https://stackoverflow.com/questions/38884522/why-is-my-asynchronous-function-returning-promise-pending-instead-of-a-val
 */
+
+/**
+* # Fatal error in , line 0 / Fatal JavaScript invalid size error 174895934 (see crbug.com/1201626) / #FailureMessage Object: 0x7ffe82c03a00
+*
+* https://stackoverflow.com/questions/71541488/why-its-giving-me-this-error-fatal-error-in-line-0-fatal-javascript-invali
+* https://medium.com/@stheodorejohn/fatal-javascript-invalid-size-error-169220804-causes-and-solutions-61a55ed919d1
+*/
