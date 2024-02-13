@@ -1,8 +1,10 @@
 import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import UserRepository from '../repositories/UserRepository.js';
+import VideoRepository from '../repositories/VideoRepository.js';
 
 const userRepository = new UserRepository();
+const videoRepository = new VideoRepository();
 
 export default class UserController {
     signup(req, res) {
@@ -117,6 +119,67 @@ export default class UserController {
                     message: 'Notification has been marked as read.'
                 });
             }).catch(err => console.log(err));
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login to perform this action.'
+            });
+        }
+    }
+
+    subscribe(req, res) {
+        if (req.session.user_id) {
+            videoRepository.getById(req.body.videoId).then(video => {
+                if (req.session.uer_id == video.user._id) {
+                    res.json({
+                        status: 'error',
+                        message: 'This is your channel. Stupid !'
+                    });
+                } else {
+                    userRepository.getById(req.session.user_id).then(user => {
+                        const filter = user.subscriptions.filter(subscribe => {
+                            return subscribe._id.toString() == video.user._id.toString();
+                        });
+
+                        if (filter.length > 0) {
+                            res.json({
+                                status: 'error',
+                                message: 'Already subscribed'
+                            });
+                        } else {
+                            userRepository.findAndUpdate(video.user._id, {
+                                $inc: {
+                                    subscribers: 1
+                                }
+                            }, {
+                                returnOriginal: false
+                            }).then(userData => {
+                                userRepository.update(req.session.user_id, {
+                                    $push: {
+                                        subscriptions: {
+                                            _id: video.user._id,
+                                            name: video.user.name,
+                                            subscribers: userData.subscribers,
+                                            image: userData.image
+                                        }
+                                    }
+                                }).then(data => {
+                                    videoRepository.findAndUpdate(req.body.videoId, {
+                                        $inc: {
+                                            'user.subscribers': 1
+                                        }
+                                    });
+
+                                    res.json({
+                                        status: 'success',
+                                        message: 'Subscription has been added'
+                                    });
+                                }).catch(err => console.log(err));
+                            }).catch(err => console.log(err));
+                        }
+                    }).catch(err => console.log(`Error when get user ${err}`));
+                }
+            }).catch(err => console.log(`Error when get video ${err}`));
         } else {
             res.json({
                 status: 'error',
