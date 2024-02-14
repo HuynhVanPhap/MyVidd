@@ -13,7 +13,7 @@
 <script>
     const category = document.getElementById('category').value;
     const videoId = document.getElementById('videoId').value;
-    const ajax = new XMLHttpRequest();
+    var ajax = new XMLHttpRequest();
 
     ajax.open('GET', `/video/related/${category}/${videoId}`, true);
 

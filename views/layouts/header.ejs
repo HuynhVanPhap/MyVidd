@@ -81,7 +81,7 @@
                                     return true;
                                 }
 
-                                const ajax = new XMLHttpRequest();
+                                var ajax = new XMLHttpRequest();
 
                                 ajax.open("GET", '/user/get-user', true);
 
@@ -160,3 +160,10 @@
 
         
         <div class="d-flex" id="wrapper">
+            <div class="bg-light border-right" id="sidebar-wrapper">
+                <% if (typeof isLogin !== 'undefined' && isLogin) { %>
+                    <div class="list-group list-group-flush">
+                        <a href="/video/history/list" class="list-group-item list-group-item-action bg-light">History</a>
+                    </div>
+                <% } %>
+            </div>
