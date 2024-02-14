@@ -6,4 +6,6 @@ const homeController = new HomeController();
 
 router.get('/', homeController.index);
 
+router.get('/channel/:_id', homeController.channel);
+
 export default router;

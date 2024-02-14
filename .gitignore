@@ -132,3 +132,5 @@ dist
 .docker/data/**
 public/thumbnails/**
 public/videos/**
+public/covers/**
+public/profiles/**

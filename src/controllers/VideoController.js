@@ -1,6 +1,6 @@
+import mongoose from 'mongoose';
 import fse from 'fs-extra';
 import { getVideoDurationInSeconds } from 'get-video-duration';
-import mongoose from 'mongoose';
 import useValidationResult from '../hook/useValidationResult.js';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from "../repositories/VideoRepository.js";
