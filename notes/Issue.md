@@ -61,3 +61,10 @@
 * https://stackoverflow.com/questions/71541488/why-its-giving-me-this-error-fatal-error-in-line-0-fatal-javascript-invali
 * https://medium.com/@stheodorejohn/fatal-javascript-invalid-size-error-169220804-causes-and-solutions-61a55ed919d1
 */
+
+/**
+* # onbeforeunload not working
+*
+* https://weekendprojects.dev/posts/how-to-fix-javascript-onbeforeunload-not-working/
+* https://stackoverflow.com/questions/24081699/why-onbeforeunload-event-is-not-firing
+*/

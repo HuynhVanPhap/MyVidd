@@ -343,4 +343,97 @@ export default class VideoController {
             res.json(videos);
         }).catch(err => console.log(err));
     }
+
+    history(req, res) {
+        if (req.session.user_id) {
+            videoRepository.getById(req.body.videoId).then(video => {
+                userRepository.getWhere({
+                    $and: [{
+                        _id: req.session.user_id
+                    }, {
+                        'history.videoId': req.body.videoId
+                    }]
+                }).then(user => {
+                    if (user == null) {
+                        userRepository.update(req.session.user_id, {
+                            $push: {
+                                history: {
+                                    _id: new mongoose.mongo.ObjectId(),
+                                    videoId: req.body.videoId,
+                                    watch: video.watch,
+                                    title: video.title,
+                                    watched: req.body.watched,
+                                    thumbnail: video.thumbnail,
+                                    minutes: video.minutes,
+                                    seconds: video.seconds
+                                }
+                            }
+                        });
+
+                        res.json({
+                            status: 'success',
+                            message: 'History has been added'
+                        })
+                    } else {
+                        userRepository.updateWhere({
+                            $and: [{
+                                _id: new mongoose.mongo.ObjectId(req.session.user_id),
+                            }, {
+                                'history.videoId': req.body.videoId
+                            }]
+                        }, {
+                            $set: {
+                                'history.$.watched': req.body.watched
+                            }
+                        });
+
+                        res.json({
+                            status: 'success',
+                            message: 'History has been updated'
+                        });
+                    }
+                }).catch(err => console.log(`history: Error when take user ${err}`));
+            }).catch(err => console.log(`history: Error when take video ${err}`));
+        } else {
+            res.json({
+                status: 'error',
+                message: 'Please login to perform this action.'
+            });
+        }
+    }
+
+    historyList(req, res) {
+        if (req.session.user_id) {
+            userRepository.getById(req.session.user_id).then(user => {
+                res.render('video/history', {
+                    isLogin: true,
+                    videos: user.history
+                });
+            }).catch(err => console.log(`HistoryList: Error when get User ${err}`));
+        } else {
+            res.redirect('/login');
+        }
+    }
+
+    historyRemove(req, res) {
+        if (req.session.user_id) {
+            userRepository.updateWhere({
+                $and: [{
+                    _id: new mongoose.mongo.ObjectId(req.session.user_id),
+                }, {
+                    'history.videoId': req.body.videoId
+                }]
+            }, {
+                $pull: {
+                    history: {
+                        videoId: req.body.videoId
+                    }
+                }
+            });
+
+            res.redirect('/video/history/list');
+        } else {
+            res.redirect('/login');
+        }
+    }
 }

@@ -23,6 +23,12 @@ router.post('/video/comment', videoController.comment);
 
 router.post('/video/reply', videoController.reply);
 
+router.post('/video/history', videoController.history);
+
+router.get('/video/history/list', videoController.historyList);
+
+router.post('/video/history/remove', videoController.historyRemove);
+
 router.get('/video/related/:category/:videoId', videoController.related);
 
 export default router;
