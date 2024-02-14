@@ -87,23 +87,33 @@
 
                                 ajax.onreadystatechange = function() {
                                     if (this.readyState == 4 && this.status == 200) {
-                                        let html;
                                         const response = JSON.parse(this.responseText);
+                                        
+                                        if (response.status == 'success') {
+                                            let html = '';
+                                            window.user = response.user;
 
-                                        window.user.notification = window.user.notification.reverse();
+                                            html += '<div class="list-group list-group-flush">';
+                                            html += `<a href="/channel/${window.user._id}" class="list-group-item list-group-item-action bg-light">My Channel</a>`;
+                                            html += '</div>';
 
-                                        window.user.notification.forEach(notification => {
-                                            if (!notification.is_read) {
-                                                if (notification.type == 'new_comment') {
-                                                    html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="'
-                                                        + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
+                                            document.getElementById('sidebar-wrapper').innerHTML += html;
+
+                                            window.user.notification = window.user.notification.reverse();
+
+                                            window.user.notification.forEach(notification => {
+                                                if (!notification.is_read) {
+                                                    if (notification.type == 'new_comment') {
+                                                        html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="'
+                                                            + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
 
-                                        document.getElementById("unread-notifications").innerHTML = html;
-                                    } else {
-                                        alert(response.message);
+                                            document.getElementById("unread-notifications").innerHTML = html;
+                                        } else {
+                                            alert(response.message);
+                                        }
                                     }
                                 }
 

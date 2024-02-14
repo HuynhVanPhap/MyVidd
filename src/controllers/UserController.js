@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+import fse from 'fs-extra';
 import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import UserRepository from '../repositories/UserRepository.js';
@@ -185,6 +187,58 @@ export default class UserController {
                 status: 'error',
                 message: 'Please login to perform this action.'
             });
+        }
+    }
+
+    editAvatar(req, res) {
+        if (req.session.user_id) {
+            const oldPath = req.file.path;
+            const newPath = `public/profiles/${req.session.user_id}-${req.file.originalname}`;
+
+            fse.copyFile(oldPath, newPath).then(() => {
+                userRepository.update(req.session.user_id, {
+                    $set: {
+                        image: newPath
+                    }
+                });
+                userRepository.updateWhere({
+                    'subscriptions._id': new mongoose.mongo.ObjectId(req.session.user_id)
+                }, {
+                    $set: {
+                        'subscriptions.$.image': newPath
+                    }
+                });
+                videoRepository.updateWhere({
+                    'user._id': new mongoose.mongo.ObjectId(req.session.user_id)
+                }, {
+                    'user.image': newPath,
+                });
+            }).catch(err => `EditAvatar : Error when copy file ${err}`);
+            
+            fse.removeSync(oldPath);
+            res.redirect('/channel/'+req.session.user_id);
+        } else {
+            res.redirect('/login');
+        }
+    }
+
+    editCoverAvatar(req, res) {
+        if (req.session.user_id) {
+            const oldPath = req.file.path;
+            const newPath = `public/covers/${req.session.user_id}-${req.file.originalname}`;
+
+            fse.copyFile(oldPath, newPath).then(() => {
+                userRepository.update(req.session.user_id, {
+                    $set: {
+                        coverPhoto: newPath
+                    }
+                });
+            }).catch(err => `EditAvatar : Error when copy file ${err}`);
+            
+            fse.removeSync(oldPath);
+            res.redirect('/channel/'+req.session.user_id);
+        } else {
+            res.redirect('/login');
         }
     }
 }
