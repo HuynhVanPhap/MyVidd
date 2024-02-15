@@ -7,7 +7,9 @@
                 </h1>
 
                 <p class="lead">
-                    by <%= video.user.name %>
+                    <a href="/channel/<%= video.user._id %>">
+                        by <%= video.user.name %>
+                    </a>
                 </p>
 
                 <hr>

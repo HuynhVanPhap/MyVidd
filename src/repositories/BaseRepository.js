@@ -31,6 +31,10 @@ export default class BaseRepository {
         return await this.model.updateOne(where, params).exec();
     }
 
+    async updateMany(where, params) {
+        return await this.model.updateMany(where, params).exec();
+    }
+
     async findAndUpdate(id, params, option = {}) {
         return await this.model.findOneAndUpdate({ _id: id }, params, option).exec();
     }
@@ -39,7 +43,11 @@ export default class BaseRepository {
         return await this.model.findOneAndUpdate(where, params).exec();
     }
 
-    async findMany(where) {
+    async findMany(where = {}) {
         return await this.model.find(where).exec();
+    }
+    
+    async removeWhere(where) {
+        return await this.model.deleteOne(where).exec();
     }
 }

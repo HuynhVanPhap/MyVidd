@@ -15,6 +15,12 @@ router.post('/upload', useMulter().fields([
 
 router.get('/watch/:watch', videoController.watch);
 
+router.get('/video/edit/:watch', videoController.editView);
+
+router.post('/video/edit', useMulter().single('thumbnail'), videoController.edit);
+
+router.post('/video/delete', videoController.delete);
+
 router.post('/video/do-like', videoController.doLike);
 
 router.post('/video/do-dislike', videoController.doDisLike);
