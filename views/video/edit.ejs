@@ -1,0 +1,51 @@
+<%- include("../layouts/header") %>
+    <%
+        const title = (typeof form != 'undefined' && form?.title != '') ? form.title : '';
+        const description = (typeof form != 'undefined' && form?.description != '') ? form.description : '';
+        const tags = (typeof form != 'undefined' && form?.tags != '') ? form.tags : '';
+    %>
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="/video/edit" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="videoId" value="<%= video._id %>">
+                    <img class="img-fluid" src="<%= baseUrl + video.thumbnail %>">
+                    <div class="form-group">
+                        <label>Select Thumbnail</label>
+                        <input type="file" name="thumbnail" class="form-control-file" accept="image/*">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" name="title" class="form-control" value="<%= video.title %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea type="text" name="description" class="form-control"><%= video.description %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <input type="text" name="tags" class="form-control" value="<%= video.tags %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select class="form-control" name="category">
+                            <option value="">Select Category</option>
+                            <option value="technology" <%= video.category == 'technology' ? 'selected' : '' %>>Technology</option>
+                            <option value="gaming"  <%= video.category == 'gaming' ? 'selected' : '' %>>Gaming</option>
+                            <option value="education"  <%= video.category == 'education' ? 'selected' : '' %>>Education</option>
+                            <option value="funny"  <%= video.category == 'funny' ? 'selected' : '' %>>Funny</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning">Submit</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+<%- include("../layouts/footer") %>

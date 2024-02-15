@@ -88,10 +88,15 @@
                                 <p class="card-text"><%= video.category %></p>
                             </div>
                             <div class="card-footer">
-                                <a href="/video/watch/<%= video.watch %>" class="btn btn-primary">View</a>
+                                <a href="/watch/<%= video.watch %>" class="btn btn-primary">View</a>
 
                                 <% if (isMyChannel) { %>
-                                    <a href="/edit/<%= video.watch %>" class="btn btn-warning">Edit</a>
+                                    <a href="/video/edit/<%= video.watch %>" class="btn btn-warning">Edit</a>
+
+                                    <form action="/video/delete" method="POST" onsubmit="return confirm('Do you really want continue delete this video ?');" style="display: contents;">
+                                        <input type="hidden" name="_id" value="<%= video._id %>">
+                                        <button class="btn btn-danger" type="submit">Delete</button>
+                                    </form>
                                 <% } %>
                             </div>
                         </div>

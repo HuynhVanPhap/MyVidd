@@ -436,4 +436,124 @@ export default class VideoController {
             res.redirect('/login');
         }
     }
+
+    editView(req, res) {
+        if (req.session.user_id) {
+            videoRepository.getWhere({
+                $and: [{
+                    watch: parseInt(req.params.watch)
+                }, {
+                    'user._id': new mongoose.mongo.ObjectId(req.session.user_id)
+                }]
+            }).then(video => {
+                if (video == null) {
+                    res.send('Video not found !');
+                } else {
+                    res.render('video/edit', {
+                        isLogin: true,
+                        video: video,
+                    });
+                }
+            }).catch(err => `EditView : Error when get video ${err}`);
+        } else {
+            res.redirect('/login');
+        }
+    }
+
+    edit(req, res) {
+        if (req.session.user_id) {
+            videoRepository.getWhere({
+                $and: [{
+                    _id: req.body.videoId
+                }, {
+                    'user._id': new mongoose.mongo.ObjectId(req.session.user_id)
+                }]
+            }).then(video => {
+                if (video == null) {
+                    res.send('Sorry this not your video');
+                } else {
+                    const oldPath = req.file.path;
+                    const newPath = `public/thumbnails/${new Date().getTime()}-${req.file.originalname}`;
+                    const videoThumb = video.thumbnail;
+
+                    fse.copyFile(oldPath, newPath).then(() => {
+                        videoRepository.update(video._id, {
+                            $set: {
+                                title: req.body.title,
+                                description: req.body.description,
+                                tags: req.body.tags,
+                                thumbnail: newPath,
+                                category: req.body.category
+                            }
+                        }).then(data => {
+                            userRepository.findWhereAndUpdate({
+                                $and: [{
+                                    _id: req.session.user_id
+                                }, {
+                                    'videos._id': new mongoose.mongo.ObjectId(video._id)
+                                }]
+                            }, {
+                                $set: [{
+                                    'videos.$.title': req.body.title,
+                                    'videos.$.thumbnail': req.body.thumbnail
+                                }]
+                            });
+                        });
+                    }).catch(err => console.log(`Edit : copy file error ${err}`));
+                    
+                    fse.removeSync(oldPath);
+                    fse.removeSync(videoThumb);
+                    res.redirect(`/video/edit/${video.watch}`);
+                }
+            }).catch(err => console.log(`Edit : Error when get video ${video}`));
+        }
+    }
+
+    delete(req, res) {
+        if (req.session.user_id) {
+            videoRepository.getWhere({
+                $and: [{
+                    _id: new mongoose.mongo.ObjectId(req.body._id)
+                }, {
+                    'user._id': new mongoose.mongo.ObjectId(req.session.user_id),
+                }]
+            }).then(video => {
+                if (video == null) {
+                    res.send('Video not found !');
+                    return false;
+                } else {
+                    fse.removeSync(video.filePath);
+                    fse.removeSync(video.thumbnail);
+
+                    videoRepository.removeWhere({
+                        $and: [{
+                            _id: new mongoose.mongo.ObjectId(req.body._id)
+                        }, {
+                            'user._id': new mongoose.mongo.ObjectId(req.session.user_id)
+                        }]
+                    });
+
+                    userRepository.findAndUpdate(req.session.user_id, {
+                        $pull: {
+                            videos: {
+                                _id: new mongoose.mongo.ObjectId(req.body._id)
+                            }
+                        }
+                    });
+
+                    userRepository.updateMany({}, {
+                        $pull: {
+                            history: {
+                                videoId: req.body._id.toString(),
+                            }
+                        }
+                    });
+                }
+            }).catch(err => console.log(`Video Delete : Error when get video ${err}`));
+
+            res.redirect(`/channel/${req.session.user_id}`);
+        } else {
+            res.redirect('/login');
+        }
+    }
 }
