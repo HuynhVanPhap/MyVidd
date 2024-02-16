@@ -37,4 +37,8 @@ router.post('/video/history/remove', videoController.historyRemove);
 
 router.get('/video/related/:category/:videoId', videoController.related);
 
+router.post('/video/playlist/create', videoController.playlistCreate);
+
+router.get('/video/playlist/:_id/:watch', videoController.playlistView);
+
 export default router;
