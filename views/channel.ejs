@@ -69,6 +69,38 @@
                 </div>
             </div>
 
+            <% if (isMyChannel) { %>
+                <form action="/video/playlist/create" method="POST">
+                    <div class="form-group">
+                        <label>Playlist title</label>
+                        <input type="text" name="title" class="form-control">
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Create List">
+                </form>
+            <% } %>
+
+            <div class="row my-4">
+                <%
+                    const playlists = user.playlist.reverse();
+                    playlists.forEach(playlist => {
+                %>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3><%= playlist.title %></h3>
+                            </div>
+                            <div class="card-footer">
+                                <% if (playlist.videos.length > 0) { %>
+                                    <a href="/video/playlist/<%= playlist._id %>/<%= playlist.videos[0].watch %>" class="btn btn-primary">View</a>
+                                <% } else { %>
+                                    <span>Playlist is empty</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            
             <hr>
 
             <h1>Channel Videos</h1>
@@ -82,7 +114,7 @@
                 %>
                     <div class="col-md-4">
                         <div class="card h-100">
-                            <img src="<%= baseUrl + video.thumbnail  %>" class="card-img-top">
+                            <img src="<%= baseUrl + video.thumbnail %>" class="card-img-top">
                             <div class="card-body">
                                 <h4 class="card-title"><%= video.title %></h4>
                                 <p class="card-text"><%= video.category %></p>

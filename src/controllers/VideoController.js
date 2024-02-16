@@ -121,7 +121,9 @@ export default class VideoController {
 
                 res.render("video/watch", {
                     isLogin: req.session.user_id ? true : false,
-                    video: video
+                    video: video,
+                    playlist: [],
+                    playlistId: ''
                 });
             }
         })
@@ -449,10 +451,13 @@ export default class VideoController {
                 if (video == null) {
                     res.send('Video not found !');
                 } else {
-                    res.render('video/edit', {
-                        isLogin: true,
-                        video: video,
-                    });
+                    userRepository.getById(req.session.user_id).then(user => {
+                        res.render('video/edit', {
+                            isLogin: true,
+                            video: video,
+                            user: user
+                        });
+                    }).catch(err => console.log(`EditView : Error when get user ${err}`));
                 }
             }).catch(err => `EditView : Error when get video ${err}`);
         } else {
@@ -464,7 +469,7 @@ export default class VideoController {
         if (req.session.user_id) {
             videoRepository.getWhere({
                 $and: [{
-                    _id: req.body.videoId
+                    _id: new mongoose.mongo.ObjectId(req.body.videoId)
                 }, {
                     'user._id': new mongoose.mongo.ObjectId(req.session.user_id)
                 }]
@@ -483,21 +488,72 @@ export default class VideoController {
                                 description: req.body.description,
                                 tags: req.body.tags,
                                 thumbnail: newPath,
-                                category: req.body.category
+                                category: req.body.category,
+                                playlist: req.body.playlist
                             }
+
                         }).then(data => {
                             userRepository.findWhereAndUpdate({
                                 $and: [{
-                                    _id: req.session.user_id
+                                    _id: new mongoose.mongo.ObjectId(req.session.user_id)
                                 }, {
                                     'videos._id': new mongoose.mongo.ObjectId(video._id)
                                 }]
                             }, {
-                                $set: [{
+                                $set: {
                                     'videos.$.title': req.body.title,
-                                    'videos.$.thumbnail': req.body.thumbnail
-                                }]
+                                    'videos.$.thumbnail': newPath
+                                }
                             });
+
+                            if (req.body.playlist == '') {
+                                userRepository.updateWhere({
+                                    $and: [{
+                                        _id: req.session.user_id
+                                    }, {
+                                        'playlist._id': new mongoose.mongo.ObjectId(video.playlist)
+                                    }]
+                                }, {
+                                    $pull: {
+                                        'playlist.$.videos': {
+                                            _id: new mongoose.mongo.ObjectId(req.body.videoId)
+                                        }
+                                    }
+                                });
+                            } else {
+                                if (video.playlist != '') {
+                                    userRepository.updateWhere({
+                                        $and: [{
+                                            _id: req.session.user_id
+                                        }, {
+                                            'playlist._id': new mongoose.mongo.ObjectId(video.playlist)
+                                        }]
+                                    }, {
+                                        $pull: {
+                                            'playlist.$.videos': {
+                                                _id: new mongoose.mongo.ObjectId(req.body.videoId)
+                                            }
+                                        }
+                                    });
+                                }
+
+                                userRepository.updateWhere({
+                                    $and: [{
+                                        _id: req.session.user_id
+                                    }, {
+                                        'playlist._id': new mongoose.mongo.ObjectId(req.body.playlist)
+                                    }]
+                                }, {
+                                    $push: {
+                                        'playlist.$.videos': {
+                                            _id: new mongoose.mongo.ObjectId(req.body.videoId),
+                                            title: req.body.title,
+                                            watch: video.watch,
+                                            thumbnail: newPath
+                                        }
+                                    }
+                                });
+                            }
                         });
                     }).catch(err => console.log(`Edit : copy file error ${err}`));
                     
@@ -505,7 +561,7 @@ export default class VideoController {
                     fse.removeSync(videoThumb);
                     res.redirect(`/video/edit/${video.watch}`);
                 }
-            }).catch(err => console.log(`Edit : Error when get video ${video}`));
+            }).catch(err => console.log(`Edit : Error when get video ${err}`));
         }
     }
 
@@ -548,6 +604,35 @@ export default class VideoController {
                             }
                         }
                     });
+
+                    userRepository.getById(req.session.user_id).then(user => {
+                        let playlistId = '';
+
+                        user.playlist.forEach(playlist => {
+                            playlist.videos.forEach(video => {
+                                if (video._id == req.body._id) {
+                                    playlistId = playlist._id;
+                                    return true;
+                                }
+                            });
+                        });
+
+                        if (playlistId != '') {
+                            userRepository.updateWhere({
+                                $and: [{
+                                    _id: new mongoose.mongo.ObjectId(req.session.user_id)
+                                }, {
+                                    'playlist._id': new mongoose.mongo.ObjectId(playlistId)
+                                }]
+                            }, {
+                                $pull: {
+                                    'playlist.$.videos': {
+                                        _id: req.body._id
+                                    }
+                                }
+                            });
+                        }
+                    }).catch(err => console.log(`Video Delete : Error ${err}`));
                 }
             }).catch(err => console.log(`Video Delete : Error when get video ${err}`));
 
@@ -555,5 +640,60 @@ export default class VideoController {
         } else {
             res.redirect('/login');
         }
+    }
+
+    playlistCreate(req, res) {
+        if (req.session.user_id) {
+            userRepository.update(req.session.user_id, {
+                $push: {
+                    playlist: {
+                        _id: new mongoose.mongo.ObjectId(),
+                        title: req.body.title,
+                        videos: []
+                    }
+                }
+            });
+
+            res.redirect(`/channel/${req.session.user_id}`);
+        } else {
+            res.redirect('/login');
+        }
+    }
+
+    playlistView(req, res) {
+        videoRepository.getWhere({
+            $and: [{
+                watch: parseInt(req.params.watch)
+            }, {
+                playlist: req.params._id
+            }]
+        }).then(video => {
+            if (video == null) {
+                res.send('Video not found !');
+            } else {
+                videoRepository.update(video._id, {
+                    $inc: {
+                        views: 1
+                    }
+                });
+                userRepository.getById(video.user._id).then(user => {
+                    let playlistVideos = [];
+
+                    user.playlist.forEach(playlist => {
+                        if (playlist._id == req.params._id) {
+                            playlistVideos = playlist.videos;
+                            return true;
+                        }
+                    });
+
+                    res.render('video/watch', {
+                        isLogin: req.session.user_id ? true : false,
+                        video: video,
+                        playlist: playlistVideos,
+                        playlistId: req.params._id
+                    });
+                })
+            }
+        }).catch(err => console.log(`PlaylistView : Error ${err}`));
     }
 }

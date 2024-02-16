@@ -17,7 +17,7 @@ const videoSchema = new Schema({
     minutes: Number,
     seconds: Number,
     watch: Number,
-    playlist: { type: Array, default: [] },
+    playlist: { type: String, default: '' },
     views: { type: Number, default: 0 },
     likers: { type: Array, default: [] },
     dislikers: { type: Array, default: [] },
