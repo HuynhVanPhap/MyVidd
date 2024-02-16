@@ -41,4 +41,6 @@ router.post('/video/playlist/create', videoController.playlistCreate);
 
 router.get('/video/playlist/:_id/:watch', videoController.playlistView);
 
+router.post('/video/playlist/remove', videoController.playlistRemove);
+
 export default router;

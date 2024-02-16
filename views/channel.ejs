@@ -95,6 +95,18 @@
                                 <% } else { %>
                                     <span>Playlist is empty</span>
                                 <% } %>
+
+                                <% if (isMyChannel) { %>
+                                    <form
+                                        method="POST"
+                                        action="/video/playlist/remove"
+                                        onsubmit="return confirm('Do you really want to continue this playlist ?');"
+                                        style="display: contents;"
+                                    >
+                                        <input type="hidden" name="_id" value="<%= playlist._id %>">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                <% } %>
                             </div>
                         </div>
                     </div>

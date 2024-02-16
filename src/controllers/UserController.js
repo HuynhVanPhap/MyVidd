@@ -202,7 +202,7 @@ export default class UserController {
                     }
                 });
                 userRepository.updateWhere({
-                    'subscriptions._id': new mongoose.mongo.ObjectId(req.session.user_id)
+                    'subscriptions._id': req.session.user_id
                 }, {
                     $set: {
                         'subscriptions.$.image': newPath
@@ -237,6 +237,51 @@ export default class UserController {
             
             fse.removeSync(oldPath);
             res.redirect('/channel/'+req.session.user_id);
+        } else {
+            res.redirect('/login');
+        }
+    }
+
+    subscribedView(req, res) {
+        if (req.session.user_id) {
+            userRepository.getById(req.session.user_id).then(user => {
+                res.render('subscriptions', {
+                    isLogin: true,
+                    user: user
+                })
+            }).catch(err => console.log(`SubscribedView : Error when get user ${err}`));
+        } else {
+            res.redirect('/login');
+        }
+    }
+
+    subscribedRemove(req, res) {
+        if (req.session.user_id) {
+            userRepository.update(req.session.user_id, {
+                $pull: {
+                    subscriptions: {
+                        _id: req.body._id
+                    }
+                }
+            }).then(data => {
+                if (data.modifiedCount > 0) {
+                    userRepository.update(req.body._id, {
+                        $dec: {
+                            subscribers: 1
+                        }
+                    });
+
+                    videoRepository.updateWhere({
+                        'user._id': req.body._id
+                    }, {
+                        $dec: {
+                            'user.$.subscribers': 1
+                        }
+                    });
+                }
+
+                res.redirect('/user/subscribed');
+            }).catch(err => console.log(`SubscribedRemove : Error when update user ${err}`));
         } else {
             res.redirect('/login');
         }
