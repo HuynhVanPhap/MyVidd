@@ -43,4 +43,10 @@ router.get('/video/playlist/:_id/:watch', videoController.playlistView);
 
 router.post('/video/playlist/remove', videoController.playlistRemove);
 
+router.get('/video/search', videoController.search);
+
+router.get('/video/search/category/:category', videoController.searchCategory);
+
+router.get('/video/search/tags/:tag', videoController.searchTag);
+
 export default router;

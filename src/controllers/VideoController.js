@@ -733,4 +733,50 @@ export default class VideoController {
             res.redirect('/login');
         }
     }
+
+    search(req, res) {
+        videoRepository.findMany({
+            title: {
+                $regex: req.query.title
+            }
+        }).then(videos => {
+            console.log(videos);
+            res.render('video/search', {
+                isLogin: req.session.user_id ? true : false,
+                videos: videos,
+                query: req.query.title
+            });
+        }).catch(err => console.log(`search : Error when get videos ${err}`));
+    }
+
+    searchCategory(req, res) {
+        videoRepository.findMany({
+            category: {
+                $regex: '.*?' + req.params.category + '.*?'
+            }
+        }).then(videos => {
+            console.log(videos);
+            res.render('video/search', {
+                isLogin: req.session.user_id ? true : false,
+                videos: videos,
+                query: req.params.category
+            });
+        }).catch(err => console.log(`searchCategory : Error when get videos ${err}`));
+    }
+
+    searchTag(req, res) {
+        videoRepository.findMany({
+            tags: {
+                $regex: '.*' + req.params.tag + '.*',
+                $options: 'i'
+            }
+        }).then(videos => {
+            console.log(videos);
+            res.render('video/search', {
+                isLogin: req.session.user_id ? true : false,
+                videos: videos,
+                query: req.params.tag
+            });
+        }).catch(err => console.log(`searchTag : Error when get videos ${err}`));
+    }
 }
