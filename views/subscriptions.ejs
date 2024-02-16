@@ -1,0 +1,41 @@
+<%- include('layouts/header') %>
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Subscribed Channel</h1>
+            </div>
+        </div>
+        <div class="row">
+            <%
+                const subscriptions = user.subscriptions.reverse();
+                subscriptions.forEach(subscription => {
+            %>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <img
+                            src="<%= baseUrl + subscription.image %>" class="card-img-top"
+                            onerror="this.src = 'http://placehold.it/1900x700'"
+                        >
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                <%= subscription.title %>
+                                <span style="font-size: 14px; font-weight: normal; float: right; position: relative; top: 7px;">
+                                    <%= subscription.subscribers %> subscribers
+                                </span>
+                            </h4>
+                        </div>
+
+                        <div class="card-footer">
+                            <a href="/channel/<%= subscription._id %>" class="btn btn-primary">View</a>
+
+                            <form action="/user/subscribed/remove" method="POST" onsubmit="return confirm('Do you really want continue delete this subscribed ?');" style="display: contents;">
+                                <input type="hidden" name="_id" value="<%= subscription._id %>">
+                                <button class="btn btn-danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+<%- include('layouts/footer') %>

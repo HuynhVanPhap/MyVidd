@@ -11,6 +11,10 @@ router.post('/read-notification', userController.readNotification);
 
 router.post('/subscribe', userController.subscribe);
 
+router.get('/subscribed', userController.subscribedView);
+
+router.post('/subscribed/remove', userController.subscribedRemove);
+
 router.post('/edit-avatar', useMulter().single('image'), userController.editAvatar);
 
 router.post('/edit-cover-avatar', useMulter().single('image'), userController.editCoverAvatar);

@@ -696,4 +696,41 @@ export default class VideoController {
             }
         }).catch(err => console.log(`PlaylistView : Error ${err}`));
     }
+
+    playlistRemove(req, res) {
+        if (req.session.user_id) {
+            userRepository.getWhere({
+                $and: [{
+                    _id: req.session.user_id
+                }, {
+                    'playlist._id': new mongoose.mongo.ObjectId(req.body._id)
+                }]
+            }).then(user => {
+                if (user == null) {
+                    res.send('Playlist not found !');
+                    return true;
+                }
+
+                userRepository.update(req.session.user_id, {
+                    $pull: {
+                        'playlist': {
+                            _id: new mongoose.mongo.ObjectId(req.body._id),
+                        }
+                    }
+                }).catch(err => console.log(`PlaylistRemove : Error when update user ${err}`));
+
+                videoRepository.updateMany({
+                    'playlist': req.body._id
+                }, {
+                    $set: {
+                        playlist: '',
+                    }
+                }).catch(err => console.log(`PlaylistRemove : Error when update video ${err}`));
+
+                res.redirect(`/channel/${req.session.user_id}`);
+            }).catch(err => console.log(`PlaylistRemove : Error when get user ${err}`));
+        } else {
+            res.redirect('/login');
+        }
+    }
 }
