@@ -1,1 +1,0 @@
-- Subscribed không thay đổi khi unSub tại user và video

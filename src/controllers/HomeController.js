@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 import UserRepository from "../repositories/UserRepository.js";
 import VideoRepository from "../repositories/VideoRepository.js";
 
@@ -25,5 +27,54 @@ export default class HomeController {
                 });
             }
         }).catch(err => console.log(`Channel : Error when get User ${err}`));
+    }
+
+    settingView(req, res) {
+        if (req.session.user_id) {
+            userRepository.getById(req.session.user_id).then(user => {
+                res.render('setting', {
+                    isLogin: true,
+                    user: user,
+                    request: req.query
+                });
+            }).catch(err => console.log(`settingView : Error when get User ${err}`));
+        } else {
+            res.redirect('/login');
+        }
+    }
+
+    setting(req, res) {
+        if (req.session.user_id) {
+            userRepository.getById(req.session.user_id).then(user => {
+                const password = (req.body.password == '') ? user.password : bcrypt.hashSync(req.body.password, 10);
+
+                userRepository.update(user._id, {
+                    $set: {
+                        name: req.body.name,
+                        password: password
+                    }
+                });
+
+                userRepository.updateMany({
+                    'subscriptions._id': req.session.user_id
+                }, {
+                    $set: {
+                        'subscriptions.$.name': req.body.name
+                    }
+                });
+
+                videoRepository.updateMany({
+                    'user._id': new mongoose.mongo.ObjectId(req.session.user_id)
+                }, {
+                    $set: {
+                        'user.name': req.body.name
+                    }
+                });
+
+                res.redirect('/setting?message=success');
+            }).catch(err => console.log(`setting : Error when get User ${err}`));
+        } else {
+            res.redirect('/login');
+        }
     }
 }

@@ -68,3 +68,11 @@
 * https://weekendprojects.dev/posts/how-to-fix-javascript-onbeforeunload-not-working/
 * https://stackoverflow.com/questions/24081699/why-onbeforeunload-event-is-not-firing
 */
+
+/**
+* # $dec not working on mongoose
+*
+* Dùng $inc : -1 thay thế
+*
+* https://stackoverflow.com/questions/26560366/how-to-decrement-like-dec
+*/

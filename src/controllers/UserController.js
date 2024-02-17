@@ -263,25 +263,23 @@ export default class UserController {
                         _id: req.body._id
                     }
                 }
-            }).then(data => {
-                if (data.modifiedCount > 0) {
-                    userRepository.update(req.body._id, {
-                        $dec: {
-                            subscribers: 1
-                        }
-                    });
+            });
 
-                    videoRepository.updateWhere({
-                        'user._id': req.body._id
-                    }, {
-                        $dec: {
-                            'user.$.subscribers': 1
-                        }
-                    });
+            userRepository.update(req.body._id, {
+                $inc: {
+                        subscribers: -1
+                    }
+            });
+
+            videoRepository.updateWhere({
+                'user._id': req.body._id
+            }, {
+                $inc: {
+                    'user.subscribers': -1
                 }
+            });
 
-                res.redirect('/user/subscribed');
-            }).catch(err => console.log(`SubscribedRemove : Error when update user ${err}`));
+            res.redirect('/user/subscribed');
         } else {
             res.redirect('/login');
         }

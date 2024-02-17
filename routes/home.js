@@ -8,4 +8,8 @@ router.get('/', homeController.index);
 
 router.get('/channel/:_id', homeController.channel);
 
+router.get('/setting', homeController.settingView);
+
+router.post('/setting', homeController.setting);
+
 export default router;
