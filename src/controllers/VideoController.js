@@ -644,6 +644,17 @@ export default class VideoController {
 
     playlistCreate(req, res) {
         if (req.session.user_id) {
+            const errors = useValidationResult(req);
+            
+            if (errors !== null) {
+                return res.render('/channel/'+req.session.user_id, {
+                    isLogin: true,
+                    errors: {
+                        ...errors,
+                    },
+                });
+            }
+            
             userRepository.update(req.session.user_id, {
                 $push: {
                     playlist: {

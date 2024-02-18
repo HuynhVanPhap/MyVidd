@@ -1,8 +1,15 @@
 import { ExpressValidator } from "express-validator";
-import IsImage from "../rules/IsImage.js";
+import IsThumbnail from "../rules/IsThumbnail.js";
+import IsThumbnailEmpty from "../rules/IsThumbnailEmpty.js";
 import IsVideo from "../rules/IsVideo.js";
+import IsVideoEmpty from "../rules/IsVideoEmpty.js";
 
-const { checkSchema } = new ExpressValidator({});
+const { checkSchema } = new ExpressValidator({
+    IsThumbnail,
+    IsThumbnailEmpty,
+    IsVideo,
+    IsVideoEmpty
+});
 
 const uploadRequest = checkSchema({
     title: {
@@ -22,15 +29,19 @@ const uploadRequest = checkSchema({
         errorMessage: 'Category is not empty !',
     },
     video: {
-        custom: {
-            options: IsVideo,
+        IsVideoEmpty: {
+            errorMessage: 'The empty file upload not allowed !'
+        },
+        IsVideo: {
             errorMessage: 'The uploaded file is not in the correct format !'
         },
     },
     thumbnail: {
-        custom: {
-            options: IsImage,
-            errorMessage: 'The uploaded file is not in the correct format !'
+        IsThumbnailEmpty: {
+            errorMessage: 'The empty file upload not allowed !',
+        },
+        IsThumbnail: {
+            errorMessage: 'The uploaded file is not in the correct format !',
         },
     },
 });
