@@ -1,4 +1,8 @@
 <%- include("layouts/header") %>
+    <%
+        const title = (typeof form != 'undefined' && form?.title != '') ? form.title : '';
+    %>
+
     <% if (isMyChannel) { %>
         <form action="/user/edit-avatar" method="POST" enctype="multipart/form-data" id="form-change-profile-picture">
             <input
@@ -32,14 +36,14 @@
                     src="<%= baseUrl + user.coverPhoto %>"
                     class="img-fluid cover-photo"
                     style="cursor: pointer;"
-                    onerror="this.src = 'http://placehold.it/1900x700'"
+                    onerror="this.src = 'http://placehold.it/1900x250'"
                     onclick="document.getElementById('input-file-change-cover-photo').click();"
                 >
             <% } else { %>
                 <img
                     src="<%= baseUrl + user.coverPhoto %>"
                     class="img-fluid cover-photo"
-                    onerror="this.src = 'http://placehold.it/1900x700'"
+                    onerror="this.src = 'http://placehold.it/1900x250'"
                 >
             <% } %>
         </div>
@@ -74,6 +78,11 @@
                     <div class="form-group">
                         <label>Playlist title</label>
                         <input type="text" name="title" class="form-control">
+                        <% if (typeof errors !== 'undefined' && errors?.title?.msg != "") { %>
+                            <div class="error invalid-feedback" style="display: inline;">
+                                <%= errors?.title?.msg %>
+                            </div>
+                        <% } %>
                     </div>
                     <input type="submit" class="btn btn-primary" value="Create List">
                 </form>
@@ -115,7 +124,7 @@
             
             <hr>
 
-            <h1>Channel Videos</h1>
+            <h3>Channel Videos</h3>
 
             <hr>
 

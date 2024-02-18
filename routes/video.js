@@ -2,6 +2,7 @@ import express from 'express';
 import VideoController from "../src/controllers/VideoController.js";
 import uploadRequest from '../src/validation/UploadRequest.js';
 import useMulter from '../src/hook/useMulter.js';
+import uploadChannelRequest from '../src/validation/UploadChannelRequest.js';
 
 const router = express.Router();
 const videoController = new VideoController();
@@ -37,7 +38,7 @@ router.post('/video/history/remove', videoController.historyRemove);
 
 router.get('/video/related/:category/:videoId', videoController.related);
 
-router.post('/video/playlist/create', videoController.playlistCreate);
+router.post('/video/playlist/create', uploadChannelRequest, videoController.playlistCreate);
 
 router.get('/video/playlist/:_id/:watch', videoController.playlistView);
 

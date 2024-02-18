@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from '../repositories/VideoRepository.js';
+import useValidationResult from '../hook/useValidationResult.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -192,6 +193,17 @@ export default class UserController {
 
     editAvatar(req, res) {
         if (req.session.user_id) {
+            const errors = useValidationResult(req);
+            
+            if (errors !== null) {
+                return res.render('/channel/'+req.session.user_id, {
+                    isLogin: true,
+                    errors: {
+                        ...errors,
+                    },
+                });
+            }
+
             const oldPath = req.file.path;
             const newPath = `public/profiles/${req.session.user_id}-${req.file.originalname}`;
 
@@ -224,6 +236,17 @@ export default class UserController {
 
     editCoverAvatar(req, res) {
         if (req.session.user_id) {
+            const errors = useValidationResult(req);
+            
+            if (errors !== null) {
+                return res.render('/channel/'+req.session.user_id, {
+                    isLogin: true,
+                    errors: {
+                        ...errors,
+                    },
+                });
+            }
+            
             const oldPath = req.file.path;
             const newPath = `public/covers/${req.session.user_id}-${req.file.originalname}`;
 
