@@ -36,6 +36,10 @@
 * @Install get-video-duration (Get the duration of video files/streams with ffprobe)
 *
 * yarn add get-video-duration
+*
+* @Install express-session
+* 
+* yarn add express-session
 */
 
 /**
