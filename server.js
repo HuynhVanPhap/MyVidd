@@ -2,6 +2,11 @@ import express from "express";
 import session from "express-session";
 import { fileURLToPath } from 'url';
 import path from 'path';
+import MongoStore from "connect-mongo";
+import dotenv from 'dotenv';
+import { mongoClientPromise } from './database.config.js';
+
+dotenv.config();
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -26,10 +31,17 @@ app.use(express.urlencoded({extended: true}));
  **/
 app.use(session({
     secret: "User secret Object Id",
+    store: MongoStore.create({
+        // mongoUrl: process.env.MONGO_CONNECTION,
+        clientPromise: mongoClientPromise,
+        dbName: process.env.MONGO_DATABASE,
+        collectionName: 'sessions',
+        touchAfter: 24 * 3600, // Lazy session update when client F5
+    }),
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 60000,
+        maxAge: 3600000,
         // secure: true
     }
 }));

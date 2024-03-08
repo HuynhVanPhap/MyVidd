@@ -1,5 +1,5 @@
 import { ExpressValidator } from "express-validator";
-import { IMAGE_ALLOWED } from "../config/constraint";
+import { IMAGE_ALLOWED } from "../config/constraint.js";
 
 const { checkSchema } = new ExpressValidator({
     IsImage: (value, { req }) => {
