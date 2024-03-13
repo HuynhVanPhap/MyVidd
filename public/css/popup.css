@@ -63,18 +63,32 @@
 
 .notification {
     width: 100%;
-    padding: 5px 10px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.notification > a {
     font-size: 15px;
     color: #191919;
 }
 
-.user-option:hover, .notification:hover {
+.content-group-wrapper {
+    padding: 10px;
+}
+
+.user-option:hover, .content-group-wrapper:hover {
     background-color: #f7f7f7;
+}
+
+
+.flex-gap-notification {
+    gap: 0.5em;
+}
+
+.three-dot-ad {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.content > span {
+    font-size: 0.8em;
+    color: #949494;
+    font-weight: 800;
 }

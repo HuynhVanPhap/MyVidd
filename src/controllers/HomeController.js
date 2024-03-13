@@ -2,19 +2,19 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import UserRepository from "../repositories/UserRepository.js";
 import VideoRepository from "../repositories/VideoRepository.js";
+import useAuthData from '../hook/useAuthData.js';
 
 const videoRepository = new VideoRepository();
 const userRepository = new UserRepository();
 export default class HomeController {
     index(req, res) {
+        console.log(req.session);
         videoRepository.all().then(videos => {
             if (req.session.user_id) {
-                userRepository.getById(req.session.user_id).then(user => {
-                    res.render("index", {
-                        isLogin: true,
-                        user: user,
-                        videos: videos,
-                    });
+                res.render("index", {
+                    isLogin: true,
+                    auth: useAuthData(req.session),
+                    videos: videos,
                 });
             } else {
                 res.render("index", {
