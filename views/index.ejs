@@ -1,15 +1,5 @@
 <%- include("layouts/header") %>
     <div class="container my-4">
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <form action="/video/search" method="GET" class="form-inline">
-                    <div class="form-group">
-                        <input autocomplete='off' type="text" name="title" class="form-control">
-                    </div>
-                    <input type="submit" class="btn btn-primary mx-2" value="Search">
-                </form>
-            </div>
-        </div>
         <div class="row text-center">
             <% videos.forEach(video => { %>
                 <div class="col-md-3 mb-4">

@@ -8,10 +8,21 @@ const userRepository = new UserRepository();
 export default class HomeController {
     index(req, res) {
         videoRepository.all().then(videos => {
-            res.render("index", {
-                isLogin: req.session.user_id ? true : false,
-                videos: videos,
-            });
+            if (req.session.user_id) {
+                userRepository.getById(req.session.user_id).then(user => {
+                    res.render("index", {
+                        isLogin: true,
+                        user: user,
+                        videos: videos,
+                    });
+                });
+            } else {
+                res.render("index", {
+                    isLogin: false,
+                    videos: videos,
+                });
+            }
+
         });
     }
 
