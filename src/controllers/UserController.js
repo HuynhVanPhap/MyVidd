@@ -39,6 +39,9 @@ export default class UserController {
             if (user !== null && bcrypt.compareSync(req.body.password, user.password)) {
                 // Save session
                 req.session.user_id = user._id;
+                req.session.user_image = user.image;
+                req.session.user_name = user.name;
+                req.session.user_email = user.email;
                 res.redirect('/');
             } else {
                 res.render('login', {

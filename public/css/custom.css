@@ -30,6 +30,11 @@
     max-width: 100%;
 }
 
+.column-flex {
+    display: flex;
+    flex-direction: column;
+}
+
 .navbar-auth {
     display: flex;
     flex-direction: inherit;
@@ -149,4 +154,42 @@
     top: 7px;
     right: 7px;
     color: #ffffff;
+}
+
+.content-myvidd-container {
+    width: 100vw;
+    height: 90vh;
+}
+
+#videos-container {
+    width: 80%;
+}
+
+#sidebar-container {
+    width: 17%;
+}
+
+.sidebar-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.sidebar-item {
+    padding: 0.75rem 1.25rem;
+    color: #7c7c7c;
+    font-size: 1.20em;
+}
+
+.sidebar-item > i {
+    margin-right: 1.75em;
+}
+
+.sidebar-column-wraper {
+    margin: 0.25em 1em;
+}
+
+.sidebar-column-wraper:hover {
+    border-radius: 0.5em;
+    background-color: #e2dfdd;
+    font-weight: 700;
 }

@@ -4,6 +4,7 @@ import { getVideoDurationInSeconds } from 'get-video-duration';
 import useValidationResult from '../hook/useValidationResult.js';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from "../repositories/VideoRepository.js";
+import useAuthData from '../hook/useAuthData.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -123,7 +124,8 @@ export default class VideoController {
                     isLogin: req.session.user_id ? true : false,
                     video: video,
                     playlist: [],
-                    playlistId: ''
+                    playlistId: '',
+                    auth: useAuthData(req.session),
                 });
             }
         })
