@@ -1,10 +1,48 @@
+::-webkit-scrollbar {
+    width: 8px;
+    height: 5px
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #a5a19e;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #cec9c6;
+}
+
+.three-dot {
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.custom-container {
+    margin: unset;
+    padding: unset;
+    max-width: 100%;
+}
+
 .navbar-auth {
     display: flex;
     flex-direction: inherit;
     padding-left: 0;
     margin-bottom: 0;
     list-style: none;
-    gap: 10px;
+    gap: 30px;
+}
+
+.text-logo::after {
+    content: "MyVidd";
+    font-weight: 700;
+    color: #f53a51;
 }
 
 .cover-photo {
@@ -17,4 +55,98 @@
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.btn-login {
+    border-radius: 50px;
+    font-weight: 600;
+    color: #299ce1;
+    background-color: inherit;
+    border: 1px solid #ebeaea;
+}
+
+.btn-login > i {
+    margin-left: 3px;
+    margin-right: 5px;
+}
+
+.btn-login > span {
+    font-size: 15px;
+}
+
+.btn-login:hover {
+    background-color: #c6eefe;
+    border: 1px solid #c6eefe;
+}
+
+.float-right {
+    float: right;
+}
+
+.no-padding {
+    padding: unset;
+}
+
+.no-margin {
+    margin: unset;
+}
+
+.input-search {
+    background-color: unset;
+    border: 1px solid #ebeaea;
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+    box-sizing: border-box;
+}
+
+.btn-search {
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+
+.container-auth {
+    margin-right: 15px;
+}
+
+.circle-bars {
+    border-radius: 50%;
+    background-color: unset;
+    margin-bottom: 2px;
+}
+
+.circle-bars:active {
+    outline: none !important;
+    border: 1px solid #e2dfdd;
+}
+
+.btn-bars {
+    font-size: 20px;
+    padding: 10px;
+}
+
+.btn-bars:hover {
+    background-color: #e2dfdd;
+}
+
+.avatar-bars {
+    width: 35px;
+    height: 35px;
+}
+
+.btn-noti {
+    position: relative;
+    width: 45px;
+    height: 45px;
+}
+
+.noti-number {
+    background-color: #f30926;
+    width: 15px;
+    height: 15px;
+    font-size: 10px;
+    border-radius: 50%;
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    color: #ffffff;
 }

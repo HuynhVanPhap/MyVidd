@@ -11,29 +11,32 @@
         <link rel="stylesheet" href="/public/css/video-js.css">
         <link rel="stylesheet" href="/public/css/x0popup.min.css">
         <link rel="stylesheet" href="/public/vendor/fontawesome-free/css/all.min.css">
+        <link rel="stylesheet" href="/public/css/clear.css">
         <link rel="stylesheet" href="/public/css/custom.css">
+        <link rel="stylesheet" href="/public/css/popup.css">
     </head>
 
     <body>
         <%
-        months = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        ];
+            months = [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+            ];
 
-        baseUrl = 'http://localhost:3333/';
+            baseUrl = 'http://localhost:3333/';
         %>
         <script type="text/javascript">
+            // Set Global variable
             const months = [
                 "January",
                 "February",
@@ -51,126 +54,180 @@
 
             const baseUrl = 'http://localhost:3333/';
         </script>
-        <nav class="navbar navbar-expland-lg navbar-dark bg-dark">
-            <div class="container">
-                <a href="/" class="navbar-brand">
-                    Video Streaming
-                </a>
-                <div id="navbarResponsive">
-                    <ul class="navbar-nav navbar-auth ml-auto">
-                        <% if (typeof isLogin !== 'undefined' && isLogin) { %>
-                            <script>
-                                function readNotification(self) {
-                                    const _id = self.getAttribute('data-id');
-                                    const ajax = new XMLHttpRequest();
-                                    
-                                    ajax.open('POST', '/user/read-notification', true);
-                                    ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                                    ajax.onreadystatechange = function() {
-                                        if (this.readyState == 4 && this.status == 200) {
-                                            const response = JSON.parse(this.responseText);
-
-                                            if (response.status == 'error') {
-                                                alert(response.message);
-                                            }
-                                        }
-                                    }
-
-                                    ajax.send(`notificationId=${_id}`);
-                                    return true;
-                                }
-
-                                var ajax = new XMLHttpRequest();
-
-                                ajax.open("GET", '/user/get-user', true);
-
-                                ajax.onreadystatechange = function() {
-                                    if (this.readyState == 4 && this.status == 200) {
-                                        const response = JSON.parse(this.responseText);
-                                        
-                                        if (response.status == 'success') {
-                                            let html = '';
-                                            window.user = response.user;
-
-                                            html += '<div class="list-group list-group-flush">';
-                                            html += `<a href="/channel/${window.user._id}" class="list-group-item list-group-item-action bg-light">My Channel</a>`;
-                                            html += '</div>';
-
-                                            document.getElementById('sidebar-wrapper').innerHTML += html;
-
-                                            window.user.notification = window.user.notification.reverse();
-
-                                            window.user.notification.forEach(notification => {
-                                                if (!notification.is_read) {
-                                                    if (notification.type == 'new_comment') {
-                                                        html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="'
-                                                            + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
+        <nav class="navbar navbar-expland-lg" style="padding: unset;padding-top: 2px;">
+            <div class="container custom-container">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <!-- Logo -->
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-bars circle-bars">
+                                <i class="fas fa-bars"></i>
+                            </button>
+    
+                            <a href="/" class="navbar-brand text-logo">
+                                <img
+                                    src="<%= baseUrl + 'public/img/myvidd.png' %>"
+                                    alt="myvidd"
+                                    style="width: 50px; height: 50px;"
+                                >
+                            </a>
+                        </div>
+    
+                        <!-- Search -->
+                        <div class="col-sm-6" style="padding-top: 7px;">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <form action="/video/search" method="GET" class="no-margin">
+                                        <div class="row" style="height: 40px;">
+                                            <div class="col-md-10" style="height: inherit; padding-right: unset;">
+                                                <input
+                                                    autocomplete='off'
+                                                    type="text"
+                                                    name="title"
+                                                    class="form-control input-search"
+                                                    style="height: inherit;"
+                                                    placeholder="Tìm kiếm"
+                                                >
+                                            </div>
+                
+                                            <div class="col-md-2 no-padding" style="height: inherit;">
+                                                <button type="submit" class="btn btn-search" style="height: inherit;">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Auth && Option -->
+                        <div class="col-sm-3">
+                            <div id="navbarResponsive" class="float-right container-auth">
+                                <ul class="navbar-nav navbar-auth ml-auto">
+                                    <% if (typeof isLogin !== 'undefined' && isLogin) { %>
+                                        <script>
+                                            function readNotification(self) {
+                                                const _id = self.getAttribute('data-id');
+                                                const ajax = new XMLHttpRequest();
+                                                
+                                                ajax.open('POST', '/user/read-notification', true);
+                                                ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            
+                                                ajax.onreadystatechange = function() {
+                                                    if (this.readyState == 4 && this.status == 200) {
+                                                        const response = JSON.parse(this.responseText);
+            
+                                                        if (response.status == 'error') {
+                                                            alert(response.message);
+                                                        }
                                                     }
                                                 }
-                                            });
+            
+                                                ajax.send(`notificationId=${_id}`);
+                                                return true;
+                                            }
+            
+                                            function getNotifications(event) {
+                                                var ajax = new XMLHttpRequest();
+                
+                                                ajax.open("GET", '/user/get-user', true);
+                
+                                                ajax.onreadystatechange = function() {
+                                                    if (this.readyState == 4 && this.status == 200) {
+                                                        const response = JSON.parse(this.responseText);
+                                                        const popUpNotification = document.querySelector('.content-notification');
 
-                                            document.getElementById("unread-notifications").innerHTML = html;
-                                        } else {
-                                            alert(response.message);
-                                        }
-                                    }
-                                }
+                                                        if (response.status == 'success') {
+                                                            let html = '';
+                                                            window.user = response.user;
+                
+                                                            window.user.notification = window.user.notification.reverse();
+                
+                                                            window.user.notification.forEach(notification => {
+                                                                if (!notification.is_read) {
+                                                                    if (notification.type == 'new_comment') {
+                                                                        // html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="'
+                                                                        //     + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
+                                                                        html += '<div class="notification">';
+                                                                        html += '<a href="#">';
+                                                                        html += '5 người thích bình luận này của bạn: "Khải Định là một vị vua tồi có tội với đất nước và với dân tộc Việt Nam, nhưng nếu ông được sinh làm người bình thường ở thời đại bây giờ thì ông có vẻ sẽ là một nhà thiết kế tài năng"';
+                                                                        html += '</a>';
+                                                                        html += '</div>';
+                                                                    }
+                                                                }
+                                                            });
+                
+                                                            popUpNotification.innerHTML = html;
 
-                                ajax.send();
-                            </script>
+                                                            const popUpHeight = parseInt(getComputedStyle(popUpNotification).height.replace('px', ''));
+                                                            const maxHeight = parseInt('300px'.replace('px', ''));
 
-                            <li class="nav-item">
-                                <div class="dropdown">
-                                    <button
-                                        type="button"
-                                        id="dropdownMenuButton"
-                                        class="btn btn-secondary dropdown-toggle"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                    >
-                                        <i class="fa fa-bell fa-fw" style="color: white;"></i>
-                                    </button>
+                                                            if (popUpHeight > maxHeight) {
+                                                                popUpNotification.style.height = '300px';
+                                                                popUpNotification.style.overflowY = 'scroll';
+                                                            }
+                                                        } else {
+                                                            alert(response.message);
+                                                        }
+                                                    }
+                                                }
+                
+                                                ajax.send();
+                                            }
+                                        </script>
 
-                                    <div
-                                        class="dropdown-menu"
-                                        id="unread-notifications"
-                                        aria-labelledby="dropdownMenuButton"
-                                    ></div>
-                                </div>
-                            </li>
+                                        <li class="nav-item">
+                                            <div class="dropdown" style="margin-top: 3px;">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-bars circle-bars btn-noti"
+                                                    data-target="popup-notification"
+                                                    data-toggle="dropdown"
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false"
+                                                    onclick="return getNotifications(this)"
+                                                >
+                                                    <i class="far fa-bell"></i>
+                                                    <div class="noti-number">3</div>
+                                                </button>
 
-                            <li class="nav-item">
-                                <a href="/upload" class="nav-link">
-                                    Upload Video
-                                </a>
-                            </li>
+                                                <%- include("../common/popup/notification") %>
+                                            </div>
+                                        </li>
+    
+                                        <li class="nav-item">
+                                            <a
+                                                href="#"
+                                                class="nav-link"
+                                                data-target="popup-user"
+                                                data-toggle="dropdown"
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                                >
 
-                            <li class="nav-item">
-                                <a href="/setting" class="nav-link">
-                                    Setting
-                                </a>
-                            </li>
+                                                <img
+                                                    src="<%= baseUrl + user.image %>"
+                                                    onerror="this.src = 'http://placehold.it/150x150'"
+                                                    class="circle-bars avatar-bars"
+                                                >
+                                            </a>
 
-                            <li class="nav-item">
-                                <a href="/logout" class="nav-link">
-                                    Logout
-                                </a>
-                            </li>
-                        <% } else { %>
-                            <li class="nav-item">
-                                <a href="/login" class="nav-link">
-                                    Login
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/signup" class="nav-link">
-                                    SignUp
-                                </a>
-                            </li>
-                        <% } %>
-                    </ul>
+                                            <%- include("../common/popup/user") %>
+                                        </li>
+                                    <% } else { %>
+                                        <li class="nav-item float-right">
+                                            <a href="/login" class="nav-link">
+                                                <button class="btn btn-login"><i class="far fa-user"></i>
+                                                    <span>Sign in</span>
+                                                </button>
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>

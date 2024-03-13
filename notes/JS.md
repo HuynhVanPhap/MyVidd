@@ -1,0 +1,37 @@
+/**
+* # object.style.properties return empty
+*
+* object.style.properties chỉ trả về giá trị khi element được inline style
+*
+* @Link
+*
+* https://stackoverflow.com/questions/50645188/why-element-style-always-return-empty-in-js
+*
+* @Solution
+*
+* https://www.30secondsofcode.org/js/s/get-set-add-styles-to-html-element/#:~:text=Get%20the%20styles%20of%20an%20HTML%20element&text=getComputedStyle()%20.,is%20access%20the%20desired%20attributes.
+*/
+
+/**
+* # Click outside element on js
+*
+* https://www.30secondsofcode.org/js/s/listen-click-outside-event/
+* https://stackoverflow.com/questions/152975/how-do-i-detect-a-click-outside-an-element
+*/
+
+/**
+* # Getting the parent div of element
+*
+* https://stackoverflow.com/questions/6856871/getting-the-parent-div-of-element
+* https://www.javatpoint.com/how-to-get-parent-element-in-javascript
+*
+* @Tags
+*
+* how to take element perant from child js
+*/
+
+/**
+* # Close Dropdown Menu when clicking outside
+*
+* https://stackoverflow.com/questions/71726629/close-dropdown-menu-when-clicking-outside
+*/
