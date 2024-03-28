@@ -8,7 +8,6 @@ const videoRepository = new VideoRepository();
 const userRepository = new UserRepository();
 export default class HomeController {
     index(req, res) {
-        console.log(req.session);
         videoRepository.all().then(videos => {
             if (req.session.user_id) {
                 res.render("index", {

@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from '../repositories/VideoRepository.js';
 import useValidationResult from '../hook/useValidationResult.js';
+import { io } from '../../index.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -42,7 +43,12 @@ export default class UserController {
                 req.session.user_image = user.image;
                 req.session.user_name = user.name;
                 req.session.user_email = user.email;
-                res.redirect('/');
+
+                // res.redirect('/');
+                res.json({
+                    status: 'Success',
+                    userId: user._id,
+                });
             } else {
                 res.render('login', {
                     'fail': 'Login is fail. Please make sure Email and Password is correct !'
@@ -93,10 +99,14 @@ export default class UserController {
             userRepository.getById(req.session.user_id).then(user => {
                 delete user.password;
 
+                const notifications = user.notification.filter(item => {
+                    return item.is_read === false;
+                });
+
                 res.json({
                     status: 'success',
                     message: 'User has been fetched',
-                    user: user,
+                    notifications,
                 });
             });
         } else {
@@ -113,7 +123,7 @@ export default class UserController {
                 $and: [{
                     _id: req.session.user_id,
                 }, {
-                    "notification._id": req.body.notificationId,
+                    "notification._id": new mongoose.mongo.ObjectId(req.body.notificationId),
                 }]
             }, {
                 $set: {

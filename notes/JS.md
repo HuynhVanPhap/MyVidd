@@ -35,3 +35,33 @@
 *
 * https://stackoverflow.com/questions/71726629/close-dropdown-menu-when-clicking-outside
 */
+
+/**
+* # How to redirect with XMLHttpRequest
+*
+* https://stackoverflow.com/questions/33354877/javascript-xmlhttprequest-and-redirect
+*/
+
+/**
+* # Identify import modules between ECMAScript modules (ESM) and CommnJs
+*
+* @ESM
+*
+* import { Server } from "socket.io";
+*
+* @CommonJs
+*
+* const { Server } = require("socket.io");
+*/
+
+/**
+* # Error: You are trying to attach socket.io to an expressrequest handler function
+*
+* https://stackoverflow.com/questions/25000275/socket-io-error-hooking-into-express-js
+*/
+
+/**
+* # How to count all child elements of a particular element using JavaScript ?
+*
+* https://www.geeksforgeeks.org/how-to-count-all-child-elements-of-a-particular-element-using-javascript/
+*/
