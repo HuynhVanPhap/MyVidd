@@ -1,8 +1,4 @@
 <%- include("layouts/header") %>
-    <%
-        const email = (typeof form != 'undefined' && form?.email != '') ? form.email : '';
-    %>
-
     <div class="container">
         <div class="row my-4">
             <div class="col-md-12">
@@ -14,11 +10,6 @@
                     <div class="form-group" data-field='email'>
                         <label for="email">Email</label>
                         <input type="text" name="email" class="form-control">
-                        <% if (typeof errors !== 'undefined' && errors?.email?.msg != "") { %>
-                            <div class="error invalid-feedback" style="display: inline;">
-                                <%= errors?.email?.msg %>
-                            </div>
-                        <% } %>
                     </div>
                     <div class="form-group" data-field='password'>
                         <label for="password">Password</label>
