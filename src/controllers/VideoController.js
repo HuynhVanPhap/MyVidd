@@ -5,6 +5,7 @@ import useValidationResult from '../hook/useValidationResult.js';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from "../repositories/VideoRepository.js";
 import useAuthData from '../hook/useAuthData.js';
+import { io } from '../../index.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -225,11 +226,12 @@ export default class VideoController {
                     }
                 }).then(data => {
                     const channelId = data.user._id;
+                    const notiId = new mongoose.mongo.ObjectId();
 
                     userRepository.findAndUpdate(channelId, {
                         $push: {
                             notification: {
-                                _id: new mongoose.mongo.ObjectId(),
+                                _id: notiId,
                                 type: 'new_comment',
                                 content: req.body.comment,
                                 is_read: false,
@@ -246,14 +248,20 @@ export default class VideoController {
                     res.json({
                         status: 'success',
                         message: 'Comment has been posted !',
-                        user: {
-                            _id: user._id,
-                            name: user.name,
-                            image: user.image
-                        }
-                    })
+                        channelId: channelId,
+                        notiId: notiId,
+                        video_watch: data.watch,
+                        userId: user._id,
+                        name: user.name,
+                        image: user.image,
+                    });
+
                 }).catch(err => console.log(`Error when post comment ${err}`));
             }).catch(err => console.log(err));
+            // res.json({
+            //     status: 'success',
+            //     message: 'Comment has been posted !',
+            // });
         } else {
             res.json({
                 status: 'error',

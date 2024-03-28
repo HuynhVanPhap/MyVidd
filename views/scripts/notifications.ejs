@@ -1,0 +1,92 @@
+<script>
+    var ajax = new XMLHttpRequest();
+
+    ajax.open("GET", '/user/get-user', true);
+
+    ajax.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            const response = JSON.parse(this.responseText);
+            const popUpNotification = document.querySelector('.content-notification');
+            const btnNotification = document.querySelector('.btn-noti');
+
+            if (response.status == 'success') {
+                let html = '';
+                let btnHtml = btnNotification.innerHTML;
+                window.notifications = response.notifications;
+                window.notifications = window.notifications.reverse();
+                
+                if (window.notifications.length > 0) {
+
+                    window.notifications.forEach(notification => {
+                        html += createNewNotification(notification);
+                    });
+
+                    btnHtml += `<div class="noti-number">${window.notifications.length}</div>`;
+                }
+
+
+                btnNotification.innerHTML = btnHtml;
+                popUpNotification.innerHTML = html;
+
+                const popUpHeight = parseInt(getComputedStyle(popUpNotification).height.replace('px', ''));
+                const maxHeight = parseInt('300px'.replace('px', ''));
+
+                if (popUpHeight > maxHeight) {
+                    popUpNotification.style.height = '300px';
+                    popUpNotification.style.overflowY = 'scroll';
+                }
+            } else {
+                alert(response.message);
+            }
+        }
+    }
+
+    ajax.send();
+
+    function readNotification(self) {
+        const _id = self.getAttribute('data-id');
+        const ajax = new XMLHttpRequest();
+        
+        ajax.open('POST', '/user/read-notification', true);
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+
+                if (response.status == 'error') {
+                    alert(response.message);
+                } else {
+                    const videoWatch = self.getAttribute('data-watch');
+                    window.location = baseUrl + `watch/${videoWatch}`;
+                }
+            }
+        }
+
+        ajax.send(`notificationId=${_id}`);
+        
+        return true;
+    }
+
+    function createNewNotification(notification) {
+        let html = '';
+
+        html += `<a href="#" class="notification" onclick="return readNotification(this);" data-id="${notification._id}" data-watch="${notification.video_watch}">`;
+        html += '<div class="d-flex flex-gap-notification content-group-wrapper">';
+        html += '<div class="user-avatar-wrap">';
+        html += `<img
+                    src="${baseUrl + notification.user.image} %>"
+                    onerror="this.src = 'http://placehold.it/150x150'"
+                    class="circle-bars avatar-bars"
+                >`;
+        html += '</div>';
+        html += '<div class="three-dot-ad content">';
+        html += `<span>${notification.user.name} : </span>`;
+        html += notification.content;
+        html += '</div>';
+        html += '</div>';
+        html += '</a>';
+
+        return html;
+    }
+</script>

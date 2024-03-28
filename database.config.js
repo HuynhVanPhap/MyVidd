@@ -7,7 +7,7 @@ const url = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWOR
 
 export const mongoClientPromise = new Promise((resolve) => {
     mongoose.connection.on('connected', () => {
-        console.log('connected');
+        console.log('Database connected');
 
         const client = mongoose.connection.getClient();
         resolve(client);

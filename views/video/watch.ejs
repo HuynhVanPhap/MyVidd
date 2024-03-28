@@ -1,7 +1,11 @@
 <%- include("../layouts/header") %>
-    <div class="container my-4">
+    <div class="container my-4" id="videos-container">
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12"></div>
+                </div>
+
                 <h1 class="mt-4">
                     <%= video.title %>
                 </h1>
@@ -28,13 +32,17 @@
                 <input type="hidden" id="videoId" value="<%= video._id %>">
                 <input type="hidden" id="category" value="<%= video.category %>">
 
-                <video
-                    id="videoPlayer"
-                    controls
-                    style="width: 100%;"
-                    src="<%= baseUrl + video.filePath %>"
-                    poster="<%= baseUrl + video.thumbnail %>"
-                ></video>
+                <div class="row">
+                    <div class="col-md-12">
+                        <video
+                            id="videoPlayer"
+                            controls
+                            style="width: 100%;"
+                            src="<%= baseUrl + video.filePath %>"
+                            poster="<%= baseUrl + video.thumbnail %>"
+                        ></video>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-md-4">
@@ -78,32 +86,3 @@
         </div>
     </div>
 <%- include("../layouts/footer") %>
-
-<% if (typeof isLogin !== 'undefined' && isLogin) { %>
-    <script>
-        window.onbeforeunload = function (event) {
-            event.preventDefault();
-
-            const videoPlayer = document.getElementById('videoPlayer');
-            const watched = Math.floor(videoPlayer.currentTime);
-
-            if (watched > 0) {
-                const videoId = document.getElementById('videoId').value;
-                const ajax = new XMLHttpRequest();
-
-                ajax.open('POST', '/video/history', true);
-                ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                ajax.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        console.log(this.responseText);
-                    }
-                }
-
-                ajax.send(`videoId=${videoId}&watched=${watched}`);
-            }
-
-            return (event.returnValue = 'Are you sure you want to exit?');
-        };
-    </script>
-<% } %>
