@@ -42,6 +42,18 @@
             sidebar.style.display = 'block';
         }
     });
+
+    function createErrorMessage(error) {
+        const node = document.createElement('div');
+
+        if (error) {
+            node.classList.add('error', 'invalid-feedback');
+            node.style.display = 'inline';
+            node.innerText = error;
+        }
+
+        return node;
+    }
 </script>
 
 <%- include('auth') %>

@@ -16,14 +16,40 @@
             if (this.readyState == 4 && this.status == 200) {
                 const response = JSON.parse(this.responseText);
 
-                socket.emit('user::login', { userId: response.userId });
-                
-                socket.on('login-notification', data => {
-                    // Save userId to LocalStage
-                    localStorage.setItem("userId", data.userId);
-                });
+                if (response.status === 'error') {
+                    if (loginForm.querySelectorAll('.error').length > 0) {
+                        loginForm.querySelectorAll('.error').forEach(nodeError => {
+                            nodeError.parentNode.removeChild(nodeError);
+                        });
+                    }
+                    // Get all array keys of response.errors and loop them
+                    Object.keys(response.errors).forEach(error => {
+                        const field = loginForm.querySelector(`[data-field="${error}"]`);
+                        const errorNode = createErrorMessage(response.errors[error].msg);
+                        // if (field.lastElementChild.classList.contains('error')) {
+                        //     field.removeChild(field.lastElementChild);
+                        // }
+                        field.appendChild(errorNode);
+                    });
 
-                window.location = baseUrl;
+                    loginForm.querySelector("input[name='email']").setAttribute('value', response.dataForm.email);
+                }
+
+                if (response.status === 'fail') {
+                    document.querySelector('.alert-login').classList.add('alert', 'alert-danger');
+                    document.querySelector('.alert-login').innerHTML = response.message;
+                }
+
+                if (response.status === 'success') {
+                    socket.emit('user::login', { userId: response.userId });
+                    
+                    socket.on('login-notification', data => {
+                        // Save userId to LocalStage
+                        localStorage.setItem("userId", data.userId);
+                    });
+    
+                    window.location = baseUrl;
+                }
             }
         }
 

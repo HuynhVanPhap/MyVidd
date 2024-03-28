@@ -25,11 +25,12 @@ export default class UserController {
                 };
             }).mapped();
 
-            return res.render('login', {
-                'errors': {
+            return res.json({
+                status: 'error',
+                errors: {
                     ...result
                 },
-                'form': {
+                dataForm: {
                     ...req.body
                 }
             });
@@ -46,12 +47,13 @@ export default class UserController {
 
                 // res.redirect('/');
                 res.json({
-                    status: 'Success',
+                    status: 'success',
                     userId: user._id,
                 });
             } else {
-                res.render('login', {
-                    'fail': 'Login is fail. Please make sure Email and Password is correct !'
+                res.json({
+                    status: 'fail',
+                    message: 'Login is fail. Please make sure Email and Password is correct !'
                 });
             }
         })

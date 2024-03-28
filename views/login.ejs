@@ -8,30 +8,21 @@
             <div class="col-md-12">
                 <h1>Login</h1>
 
-                <% if (typeof fail !== 'undefined') { %>
-                    <div class="alert alert-danger" role="alert">
-                        <%= fail %>
-                    </div>
-                <% } %>
+                <div class="alert-login" role="alert"></div>
 
                 <form id="login-form">
-                    <div class="form-group">
+                    <div class="form-group" data-field='email'>
                         <label for="email">Email</label>
-                        <input type="text" name="email" class="form-control" value="<%= email %>">
+                        <input type="text" name="email" class="form-control">
                         <% if (typeof errors !== 'undefined' && errors?.email?.msg != "") { %>
                             <div class="error invalid-feedback" style="display: inline;">
                                 <%= errors?.email?.msg %>
                             </div>
                         <% } %>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" data-field='password'>
                         <label for="password">Password</label>
                         <input type="password" name="password" class="form-control">
-                        <% if (typeof errors !== 'undefined' && errors?.password?.msg != "") { %>
-                            <div class="error invalid-feedback" style="display: inline;">
-                                <%= errors?.password?.msg %>
-                            </div>
-                        <% } %>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>

@@ -65,3 +65,16 @@
 *
 * https://www.geeksforgeeks.org/how-to-count-all-child-elements-of-a-particular-element-using-javascript/
 */
+
+/**
+* # Select all elements with a "data-xxx" attribute without using jQuery
+*
+* https://stackoverflow.com/questions/7084557/select-all-elements-with-a-data-xxx-attribute-without-using-jquery
+*/
+
+/**
+* # "Uncaught DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node."
+*
+* Lỗi này xảy ra khi bạn cố gắng xóa một node (hoặc element) khỏi một node khác,
+* nhưng node đó không phải là con của node bạn đang cố gắng xóa nó.
+*/
