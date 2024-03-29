@@ -16,7 +16,7 @@
                 <h5 class="mt-0"><%= comment.user.name %></h5>
                 <%= comment.comment %>
 
-                <div id="replies">
+                <div class="replies" data-comment-id="<%= comment._id %>">
                     <% if (isLogin) { %>
                         <div
                             style="float: right; cursor: pointer;"
