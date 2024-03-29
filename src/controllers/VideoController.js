@@ -294,12 +294,17 @@ export default class VideoController {
                         }
                     }
                 }).then((video) => {
+                    let  userCommentId = '';
+                    const notiId = new mongoose.mongo.ObjectId();
+
                     video.comments.forEach(comment => {
                         if (comment._id == commentId) {
+                            userCommentId = comment.user._id;
+                            
                             userRepository.update(comment.user._id, {
                                 $push: {
                                     notification: {
-                                        _id: new mongoose.mongo.ObjectId(),
+                                        _id: notiId,
                                         type: 'new_reply',
                                         content: reply,
                                         is_read: false,
@@ -318,11 +323,16 @@ export default class VideoController {
                     res.json({
                         status: 'success',
                         message: 'Reply has been posted',
+                        commentId: commentId,
+                        userCommentId: userCommentId,
+                        notificationId: notiId,
+                        videoWatch: video.watch,
                         user: {
                             _id: user._id,
                             name: user.name,
                             image: user.image,
-                        }
+                        },
+                        reply: reply,
                     });
                 }).catch(err => `Error when post reply ${err}`);
             }).catch(err => console.log(err));

@@ -17,6 +17,23 @@ const videoHandler = (io, socket) => {
             content: comment.comment,
         });
     });
+
+    socket.on("reply::new", data => {
+        socket.broadcast.emit("reply::add", {
+            commentId: data.commentId,
+            name: data.user.name,
+            image: data.user.image,
+            reply: data.user.reply,
+        });
+
+        socket.to(`personal-room::${data.userCommentId}`).emit("reply::notification", {
+            notificationId: data.notificationId,
+            videoWatch: data.videoWatch,
+            name: data.user.name,
+            image: data.user.image,
+            reply: data.user.reply,
+        });
+    });
 }
 
 export default videoHandler;
