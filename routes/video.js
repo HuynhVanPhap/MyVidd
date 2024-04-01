@@ -16,6 +16,8 @@ router.post('/upload', useMulter().fields([
 
 router.get('/watch/:watch', videoController.watch);
 
+router.get('/video/get/:_id', videoController.streaming);
+
 router.get('/video/edit/:watch', videoController.editView);
 
 router.post('/video/edit', useMulter().single('thumbnail'), videoController.edit);
