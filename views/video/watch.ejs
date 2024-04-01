@@ -38,9 +38,10 @@
                             id="videoPlayer"
                             controls
                             style="width: 100%;"
-                            src="<%= baseUrl + video.filePath %>"
                             poster="<%= baseUrl + video.thumbnail %>"
-                        ></video>
+                        >
+                            <source src="<%= baseUrl + 'video/get/' + video._id %>" type="video/mp4">
+                        </video>
                     </div>
                 </div>
 

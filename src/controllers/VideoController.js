@@ -810,4 +810,46 @@ export default class VideoController {
             });
         }).catch(err => console.log(`searchTag : Error when get videos ${err}`));
     }
+
+    streaming(req, res) {
+        const range = req.headers.range;
+
+        if (!range) {
+            res.status(400).send("Requires header range");
+            return;
+        }
+
+        videoRepository.getById(req.params._id).then(video => {
+            const videoPath = video.filePath;
+            const videoSize = fse.statSync(videoPath).size;
+            const chunkSize = 20 ** 6;
+            const start = Number(range.replace(/\D/g, ""));
+            const end = Math.min(start + chunkSize, videoSize - 1);
+            const contentLength = end - start + 1;
+            const headers = {
+                "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+                "Accept-Ranges": "bytes",
+                "Content-Length": contentLength,
+                "Content-Type": "video/mp4",
+            };
+    
+            res.writeHead(206, headers);
+    
+            // streams from which data can be read
+            const videoStream = fse.createReadStream(videoPath, { start, end });
+            
+            // All the data from videoStream goes into res
+            videoStream.pipe(res);
+
+            videoStream.on('end', () => {
+                console.log('video has been download successfully.');
+            });
+
+            videoStream.on('error', (err) => {
+                res.writeHead(404, {'Content-type': 'text/html'});
+
+                console.log('Page streaming error: ' + err);
+            });
+        }).catch(err => console.log(`Streaming get video error ${err}`));
+    }
 }
