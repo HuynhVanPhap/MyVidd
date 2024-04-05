@@ -1,34 +1,10 @@
-<button class="btn btn-default" onclick="doDisLike();">
+<%
+    const bntDisLike = (typeof isDislike != 'undefined' && isDislike) ? 'btn-active' : '';
+%>
+<button class="btn btn-default btn-dislike <%= bntDisLike %>" onclick="doDisLike();">
     <i class="fa fa-thumbs-down"></i>
 
-    <span id="dislikes">
+    <!-- <span id="dislikes">
         <%= video.dislikers.length %>
-    </span>
+    </span> -->
 </button>
-
-<script type="text/javascript">
-    const doDisLike = () => {
-        const ajax = new XMLHttpRequest();
-
-        ajax.open("POST", '/video/do-dislike', true);
-        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        ajax.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                const response = JSON.parse(this.responseText);
-                console.log(response);
-                if (response.status == 'success') {
-                    let disLikes = document.getElementById('dislikes').innerHTML;
-                    disLikes = parseInt(disLikes);
-                    disLikes++;
-                    document.getElementById('dislikes').innerHTML = disLikes;
-                } else {
-                    alert(response.message);
-                }
-            }
-        }
-
-        const videoId = document.getElementById('videoId').value;
-        ajax.send(`videoId=${videoId}`);
-    }
-</script>

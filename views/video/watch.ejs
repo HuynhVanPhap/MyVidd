@@ -5,29 +5,10 @@
                 <div class="row">
                     <div class="col-md-12"></div>
                 </div>
-
-                <h1 class="mt-4">
-                    <%= video.title %>
-                </h1>
-
-                <p class="lead">
-                    <a href="/channel/<%= video.user._id %>">
-                        by <%= video.user.name %>
-                    </a>
-                </p>
-
-                <hr>
-
-                <p>
-                    <%
-                        const createdAt = new Date(video.createdAt);
-                        const date = createdAt.getDate() + "";
-                    %>
-
-                    Posted on <%= date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear() %>
-                </p>
-
-                <hr>
+                <%
+                    const createdAt = new Date(video.createdAt);
+                    const date = createdAt.getDate() + "";
+                %>
 
                 <input type="hidden" id="videoId" value="<%= video._id %>">
                 <input type="hidden" id="category" value="<%= video.category %>">
@@ -37,7 +18,7 @@
                         <video
                             id="videoPlayer"
                             controls
-                            style="width: 100%;"
+                            style="width: 100%; border-radius: 10px;"
                             poster="<%= baseUrl + video.thumbnail %>"
                         >
                             <source src="<%= baseUrl + 'video/get/' + video._id %>" type="video/mp4">
@@ -46,20 +27,51 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-0">
-                            <i class="fa fa-eye"></i>
-                            <%= video.views %> views
+                    <div class="col-md-12 my-2">
+                        <div class="video-header-wrap">
+                            <div class="video-header__title three-dot-video-name my-1">
+                                <%= video.title %>
+                            </div>
+                            <div class="video-header__action">
+                                <div class="video-header__action-channel">
+                                    <img
+                                        src="<%= baseUrl + video.user.image %>"
+                                        onerror="this.src = 'http://placehold.it/150x150'"
+                                        class="circle-bars"
+                                    >
+                                </div>
+                                <div class="video-header__action-username">
+                                    <div class="channel-name-info three-dot">
+                                        <%= video.user.name %>
+                                    </div>
+                                    <div class="channel-subcribers-info three-dot">
+                                        <%= video.user.subscribers + ' người đăng kí' %>
+                                    </div>
+                                </div>
+
+                                <div class="video-header__action-subscribe">
+                                    <%- include('../common/subscribe') %>
+                                </div>
+
+                                <div class="video-header__action-option">
+                                    <%- include('../common/like') %>
+                                    <%- include('../common/dislike') %>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-md-4">
-                        <%- include('../common/like') %>
-                        <%- include('../common/dislike') %>
-                    </div>
-
-                    <div class="col-md-4">
-                        <%- include('../common/subscribe') %>
+                <div class="row">
+                    <div class="col-md-12 my-2">
+                        <div class="description-wrap">
+                            <div class="view-and-date my-1">
+                                <%= video.views + ' views' %>   Posted on <%= date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear() %>
+                            </div>
+                            <div class="description-content my-1">
+                                <%= video.description %>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -73,10 +85,6 @@
                 </p>
 
                 <hr>
-
-                <p class="lead">
-                    <%= video.description %>
-                </p>
 
                 <%- include('../common/comment') %>
             </div>

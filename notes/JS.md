@@ -78,3 +78,19 @@
 * Lỗi này xảy ra khi bạn cố gắng xóa một node (hoặc element) khỏi một node khác,
 * nhưng node đó không phải là con của node bạn đang cố gắng xóa nó.
 */
+
+/**
+* # Một số cách để gọi hàm thông qua chuỗi trong Js
+*
+* @eval() (Not recommend vì bảo mật)
+*
+* @window[function_name]()
+*
+* @new Function(function_name)
+*
+* @Reflect.get()
+*
+* @Link
+*
+* https://stackoverflow.com/questions/359788/how-to-execute-a-javascript-function-when-i-have-its-name-as-a-string
+*/

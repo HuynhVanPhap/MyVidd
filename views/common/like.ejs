@@ -1,34 +1,8 @@
-<button class="btn btn-default" onclick="doLike();">
+<%
+    const bntLike = (typeof isLike != 'undefined' && isLike) ? 'btn-active' : '';
+%>
+<button class="btn btn-default btn-like <%= bntLike %>" onclick="doLike();">
     <i class="fa fa-thumbs-up"></i>
 
-    <span id="likes">
-        <%= video.likers.length %>
-    </span>
+    <span class="ml-1"><%= video.likers.length %></span>
 </button>
-
-<script type="text/javascript">
-    const doLike = () => {
-        const ajax = new XMLHttpRequest();
-
-        ajax.open("POST", '/video/do-like', true);
-        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        ajax.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                const response = JSON.parse(this.responseText);
-                console.log(response);
-                if (response.status == 'success') {
-                    let likes = document.getElementById('likes').innerHTML;
-                    likes = parseInt(likes);
-                    likes++;
-                    document.getElementById('likes').innerHTML = likes;
-                } else {
-                    alert(response.message);
-                }
-            }
-        }
-
-        const videoId = document.getElementById('videoId').value;
-        ajax.send(`videoId=${videoId}`);
-    }
-</script>

@@ -34,6 +34,15 @@ const videoHandler = (io, socket) => {
             reply: data.user.reply,
         });
     });
+
+    socket.on("like::new", event => {
+        const channelId = event.channelId;
+        delete event.channelId;
+
+        socket.to(`personal-room::${channelId}`).emit("like::add", {
+            ...event
+        });
+    });
 }
 
 export default videoHandler;
