@@ -63,3 +63,116 @@
     <%- include('comments') %>
     <%- include('notifications') %>
 <% } %>
+
+<script>
+    const doSubscribe = () => {
+        const ajax = new XMLHttpRequest();
+
+        ajax.open('POST', '/user/subscribe', true);
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+
+                if (response.status == 'success') {
+                    let numSubscribers;
+
+                    if (response.text === 'Subscribe') {
+                        numSubscribers = parseInt(document.querySelector(".channel-subcribers-info").innerText.replace(/\D/g, "")) - 1;
+                    } else {
+                        numSubscribers = parseInt(document.querySelector(".channel-subcribers-info").innerText.replace(/\D/g, "")) + 1;
+
+                        socket.emit("subscribe::new", {
+                            _id: response.notificationId,
+                            channelId: response.channelId,
+                            user: response.user,
+                        });
+                    }
+                    
+                    document.querySelector('.btn-subscribe').innerHTML = response.text;
+                    document.querySelector(".channel-subcribers-info").innerText = `${numSubscribers} người đăng kí`;
+                } else {
+                    alert(response.message);
+                }
+            }
+        }
+
+        const videoId = document.getElementById('videoId').value;
+
+        ajax.send(`videoId=${videoId}`);
+    }
+
+    const doLike = () => {
+        const ajax = new XMLHttpRequest();
+
+        ajax.open("POST", '/video/do-like', true);
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+                if (response.status == 'success') {
+                    const btnLike = document.querySelector('.btn-like');
+                    let likes = btnLike.querySelector('span').innerHTML;
+                    likes = parseInt(likes);
+                    likes++;
+                    btnLike.querySelector('span').innerHTML = likes;
+                    btnLike.classList.add("btn-active");
+
+                    // Remove btn-active on btn-dislike
+                    const btnDisLike = document.querySelector('.btn-dislike');
+
+                    if (btnDisLike.classList.contains('btn-active')) {
+                        btnDisLike.classList.remove('btn-active');
+                    }
+
+                    socket.emit("like::new", {
+                        notificationId: response.notificationId,
+                        channelId: response.channelId,
+                        videoWatch: response.videoWatch,
+                        user: {
+                            _id: response.user._id,
+                            name: response.user.name,
+                            image: response.user.image,
+                        }
+                    });
+                } else {
+                    alert(response.message);
+                }
+            }
+        }
+
+        const videoId = document.getElementById('videoId').value;
+        ajax.send(`videoId=${videoId}`);
+    }
+
+    const doDisLike = () => {
+        const ajax = new XMLHttpRequest();
+
+        ajax.open("POST", '/video/do-dislike', true);
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+
+                if (response.status == 'success') {
+                    document.querySelector('.btn-dislike').classList.add("btn-active");
+
+                    // Remove btn-active on btn-like
+                    const btnLike = document.querySelector('.btn-like');
+
+                    if (btnLike.classList.contains('btn-active')) {
+                        btnLike.classList.remove('btn-active');
+                    }
+                } else {
+                    alert(response.message);
+                }
+            }
+        }
+
+        const videoId = document.getElementById('videoId').value;
+        ajax.send(`videoId=${videoId}`);
+    }
+</script>

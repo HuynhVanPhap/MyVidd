@@ -23,29 +23,11 @@
     });
 
     socket.on("comment::notification", notification => {
-        const contentNotification = document.querySelector('.content-notification');
-        const btnNotification = document.querySelector('.btn-noti');
-
-        btnNotification.removeChild(btnNotification.querySelector('.noti-number'));
-
-        let btnHtml = btnNotification.innerHTML;
-        let html = createNewNotification(notification);
-
-        btnHtml += `<div class="noti-number">${contentNotification.childElementCount + 1}</div>`;
-
-        contentNotification.innerHTML = html + contentNotification.innerHTML;
-        btnNotification.innerHTML = btnHtml;
+        createNewNotification(notification, createNewCommentNotificationHTML);
     });
 
     socket.on("reply::notification", notification => {
-        const contentNotification = document.querySelector('.content-notification');
-        const btnNotification = document.querySelector('.btn-noti');
-
-        btnNotification.removeChild(btnNotification.querySelector('.noti-number'));
-
-
-        let btnHtml = btnNotification.innerHTML;
-        let html = createNewNotification({
+        createNewNotification({
             _id: notification.notificationId,
             video_watch: notification.videoWatch,
             user: {
@@ -53,11 +35,14 @@
                 image: notification.image,
             },
             content: notification.reply,
-        });
-
-        btnHtml += `<div class="noti-number">${contentNotification.childElementCount + 1}</div>`;
-
-        contentNotification.innerHTML = html + contentNotification.innerHTML;
-        btnNotification.innerHTML = btnHtml;
+        }, createNewCommentNotificationHTML);
     });
+
+    socket.on("subscribe::add", user => {
+        createNewNotification(user, createNewSubscribeNotificationHTML);
+    });
+
+    socket.on("like::add", notification => {
+        createNewNotification(notification, createNewLikeNotificationHTML);
+    })
 </script>

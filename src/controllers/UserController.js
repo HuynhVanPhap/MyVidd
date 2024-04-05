@@ -134,7 +134,7 @@ export default class UserController {
             }).then(data => {
                 res.json({
                     status: 'success',
-                    message: 'Notification has been marked as read.'
+                    message: 'Notification has been marked as read.',
                 });
             }).catch(err => console.log(err));
         } else {
@@ -155,19 +155,45 @@ export default class UserController {
                     });
                 } else {
                     userRepository.getById(req.session.user_id).then(user => {
-                        const filter = user.subscriptions.filter(subscribe => {
+                        const filter = user.subscriptions.find(subscribe => {
                             return subscribe._id.toString() == video.user._id.toString();
                         });
 
-                        if (filter.length > 0) {
-                            res.json({
-                                status: 'error',
-                                message: 'Already subscribed'
+                        if (filter != undefined) {
+                            userRepository.update(user._id, {
+                                $pull: {
+                                    subscriptions: {
+                                        _id: video.user._id
+                                    }
+                                }
                             });
+
+                            userRepository.update(video.user._id, {
+                                $pull: {
+                                    subscribers: {
+                                        _id: user._id.toString()
+                                    }
+                                }
+                            });
+
+                            videoRepository.findAndUpdate(req.body.videoId, {
+                                $inc: {
+                                    'user.subscribers': -1
+                                }
+                            });
+
+                            res.json({
+                                status: 'success',
+                                text: 'Subscribe'
+                            });
+
+                            return;
                         } else {
                             userRepository.findAndUpdate(video.user._id, {
-                                $inc: {
-                                    subscribers: 1
+                                $push: {
+                                    subscribers: {
+                                        _id: req.session.user_id,
+                                    }
                                 }
                             }, {
                                 returnOriginal: false
@@ -177,7 +203,7 @@ export default class UserController {
                                         subscriptions: {
                                             _id: video.user._id,
                                             name: video.user.name,
-                                            subscribers: userData.subscribers,
+                                            subscribers: userData.subscribers.length,
                                             image: userData.image
                                         }
                                     }
@@ -188,12 +214,39 @@ export default class UserController {
                                         }
                                     });
 
+                                    const notificationId = new mongoose.mongo.ObjectId();
+
+                                    userRepository.update(video.user._id, {
+                                        $push: {
+                                            notification: {
+                                                _id: notificationId,
+                                                type: 'new_subscribe',
+                                                content: 'Đã đăng kí theo dõi kênh của bạn',
+                                                is_read: false,
+                                                user: {
+                                                    _id: user._id,
+                                                    name: user.name,
+                                                    image: user.image,
+                                                }
+                                            }
+                                        }
+                                    });
+
                                     res.json({
                                         status: 'success',
-                                        message: 'Subscription has been added'
+                                        text: 'Subscribed',
+                                        notificationId: notificationId,
+                                        channelId: video.user._id,
+                                        user: {
+                                            _id: user._id,
+                                            name: user.name,
+                                            image: user.image,
+                                        },
                                     });
                                 }).catch(err => console.log(err));
                             }).catch(err => console.log(err));
+
+                            return;
                         }
                     }).catch(err => console.log(`Error when get user ${err}`));
                 }

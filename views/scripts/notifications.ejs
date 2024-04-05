@@ -16,9 +16,15 @@
                 window.notifications = window.notifications.reverse();
                 
                 if (window.notifications.length > 0) {
+                    const notificationType = {
+                        new_subscribe: createNewSubscribeNotificationHTML,
+                        new_comment: createNewCommentNotificationHTML,
+                        new_reply: createNewCommentNotificationHTML,
+                        new_like: createNewLikeNotificationHTML,
+                    };
 
                     window.notifications.forEach(notification => {
-                        html += createNewNotification(notification);
+                        html += notificationType[notification.type](notification);
                     });
 
                     btnHtml += `<div class="noti-number">${window.notifications.length}</div>`;
@@ -57,8 +63,16 @@
                 if (response.status == 'error') {
                     alert(response.message);
                 } else {
-                    const videoWatch = self.getAttribute('data-watch');
-                    window.location = baseUrl + `watch/${videoWatch}`;
+                    if (self.getAttribute('data-channel') != null) {
+                        window.location = baseUrl + `channel/${self.getAttribute('data-channel')}`;
+                        return;
+                    }
+
+                    if (self.getAttribute('data-watch') != null) {
+                        console.log('Net');
+                        window.location = baseUrl + `watch/${self.getAttribute('data-watch')}`;
+                        return;
+                    }
                 }
             }
         }
@@ -68,7 +82,23 @@
         return true;
     }
 
-    function createNewNotification(notification) {
+    function createNewNotification(params, callback) {
+        const contentNotification = document.querySelector('.content-notification');
+        const btnNotification = document.querySelector('.btn-noti');
+
+        btnNotification.removeChild(btnNotification.querySelector('.noti-number'));
+
+
+        let btnHtml = btnNotification.innerHTML;
+        let html = callback(params);
+
+        btnHtml += `<div class="noti-number">${contentNotification.childElementCount + 1}</div>`;
+
+        contentNotification.innerHTML = html + contentNotification.innerHTML;
+        btnNotification.innerHTML = btnHtml;
+    }
+
+    function createNewCommentNotificationHTML(notification) {
         let html = '';
 
         html += `<a href="#" class="notification" onclick="return readNotification(this);" data-id="${notification._id}" data-watch="${notification.video_watch}">`;
@@ -83,6 +113,50 @@
         html += '<div class="three-dot-ad content">';
         html += `<span>${notification.user.name} : </span>`;
         html += notification.content;
+        html += '</div>';
+        html += '</div>';
+        html += '</a>';
+
+        return html;
+    }
+
+    function createNewSubscribeNotificationHTML(notification) {
+        let html = '';
+
+        html += `<a href="#" class="notification" onclick="return readNotification(this);" data-id="${notification._id}" data-channel="${notification.user._id}">`;
+        html += '<div class="d-flex flex-gap-notification content-group-wrapper">';
+        html += '<div class="user-avatar-wrap">';
+        html += `<img
+                    src="${baseUrl + notification.user.image} %>"
+                    onerror="this.src = 'http://placehold.it/150x150'"
+                    class="circle-bars avatar-bars"
+                >`;
+        html += '</div>';
+        html += '<div class="three-dot-ad content">';
+        html += `<span>${notification.user.name} : </span>`;
+        html += 'Đã đăng kí theo dõi kênh của bạn';
+        html += '</div>';
+        html += '</div>';
+        html += '</a>';
+
+        return html;
+    }
+
+    function createNewLikeNotificationHTML(notification) {
+        let html = '';
+
+        html += `<a href="#" class="notification" onclick="return readNotification(this);" data-id="${notification._id}" data-watch="${notification.videoWatch}">`;
+        html += '<div class="d-flex flex-gap-notification content-group-wrapper">';
+        html += '<div class="user-avatar-wrap">';
+        html += `<img
+                    src="${baseUrl + notification.user.image} %>"
+                    onerror="this.src = 'http://placehold.it/150x150'"
+                    class="circle-bars avatar-bars"
+                >`;
+        html += '</div>';
+        html += '<div class="three-dot-ad content">';
+        html += `<span>${notification.user.name} : </span>`;
+        html += 'Đã thích video của bạn';
         html += '</div>';
         html += '</div>';
         html += '</a>';

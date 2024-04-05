@@ -121,6 +121,42 @@ export default class VideoController {
                     }
                 });
 
+                if (req.session.user_id) {
+                    userRepository.getById(req.session.user_id).then(user => {
+                        let isSubscribe = false;
+                        let isLike = false;
+                        let isDislike = false;
+
+                        const subscriber = user.subscriptions.find(sub => sub._id == video.user._id);
+                        const liker = video.likers.find(liker => liker._id == user._id);
+                        const disLiker = video.dislikers.find(disLiker => disLiker._id == user._id);
+
+                        if (subscriber != undefined) {
+                            isSubscribe = true;
+                        }
+
+                        if (liker != undefined) {
+                            isLike = true;
+                        }
+
+                        if (disLiker != undefined) {
+                            isDislike = true;
+                        }
+
+                        res.render("video/watch", {
+                            isLogin: req.session.user_id ? true : false,
+                            video: video,
+                            playlist: [],
+                            playlistId: '',
+                            isSubscribe: isSubscribe,
+                            isLike,
+                            isDislike,
+                            auth: useAuthData(req.session),
+                        });
+                    });
+
+                    return;
+                }
                 res.render("video/watch", {
                     isLogin: req.session.user_id ? true : false,
                     video: video,
@@ -135,33 +171,77 @@ export default class VideoController {
 
     doLike(req, res) {
         if (req.session.user_id) {
-            videoRepository.getWhere({
-                $and: [{
-                    '_id': req.body.videoId,
-                }, {
-                    'likers._id': req.session.user_id
-                }]
-            }).then(video => {
-                if (video == null) {
+            videoRepository.getById(req.body.videoId).then(video => {
+                const liker = video.likers.find(user => user._id == req.session.user_id);
+
+                if (liker == undefined) {
                     videoRepository.update(req.body.videoId, {
                         $push: {
                             likers: {
                                 _id: req.session.user_id,
                             }
                         }
-                    }).then(data => {
+                    });
+
+                    // Remove Disliker
+                    videoRepository.findWhereAndUpdate({
+                        $and: [
+                            {
+                                _id: new mongoose.mongo.ObjectId(req.body.videoId),
+                            }, {
+                                "dislikers._id": req.session.user_id,
+                            }
+                        ]
+                    }, {
+                        $pull: {
+                            dislikers: {
+                                _id: req.session.user_id,
+                            }
+                        }
+                    });
+
+                    // Save notification
+                    userRepository.getById(req.session.user_id).then(user => {
+                        const notificationId = new mongoose.mongo.ObjectId();
+
+                        userRepository.update(video.user._id, {
+                            $push: {
+                                notification: {
+                                    _id: notificationId,
+                                    type: 'new_like',
+                                    content: 'Đã thích video của bạn',
+                                    is_read: false,
+                                    user: {
+                                        _id: user._id,
+                                        name: user.name,
+                                        image: user.image,
+                                    }
+                                }
+                            }
+                        });
+
                         res.json({
                             status: 'success',
-                            message: 'Video has been liked'
+                            message: 'Like is done',
+                            notificationId: notificationId,
+                            channelId: video.user._id,
+                            videoWatch: video.watch,
+                            user: {
+                                _id: user._id,
+                                name: user.name,
+                                image: user.image,
+                            }
                         });
-                    }).catch(err => console.log(`Error when liked video ${err}`));
-                } else {
-                    res.json({
-                        status: 'error',
-                        message: 'Already liked this video'
                     });
+                    
+                    return;
                 }
-            }).catch(err => console.log(`Error when found video ${err}`));
+
+                res.json({
+                    status: 'error',
+                    message: 'Already liked this video'
+                });
+            }).catch(err => console.log(`doLike get video : ${err}`));
         } else {
             res.json({
                 status: 'error',
@@ -186,12 +266,29 @@ export default class VideoController {
                                 _id: req.session.user_id,
                             }
                         }
-                    }).then(data => {
-                        res.json({
-                            status: 'success',
-                            message: 'Video has been liked'
-                        });
-                    }).catch(err => console.log(`Error when disliked video ${err}`));
+                    });
+                    
+                    // Remove Liker
+                    videoRepository.findWhereAndUpdate({
+                        $and: [
+                            {
+                                _id: new mongoose.mongo.ObjectId(req.body.videoId),
+                            }, {
+                                "likers._id": req.session.user_id,
+                            }
+                        ]
+                    }, {
+                        $pull: {
+                            likers: {
+                                _id: req.session.user_id,
+                            }
+                        }
+                    });
+
+                    res.json({
+                        status: 'success',
+                        message: 'Video has been liked'
+                    });
                 } else {
                     res.json({
                         status: 'error',

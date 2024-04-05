@@ -193,3 +193,148 @@
     background-color: #e2dfdd;
     font-weight: 700;
 }
+
+.thumbnail-video-wrap {
+    height: 250px;
+    object-fit: cover;
+    position: relative;
+}
+
+.thumbnail-video-wrap > span {
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+    background-color: #000000;
+    opacity: 0.7;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.thumbnail-video-wrap > img {
+    height: 100%;
+    border-radius: 10px;
+}
+
+.video-container {
+    color: unset;
+    text-align: left;
+}
+
+.video-container:hover {
+    color: unset;
+}
+
+.video-info-wrap {
+    display: flex;
+    padding: 5px 0;
+}
+
+.video-info-channel {
+    width: 15%;
+    padding: 5px;
+}
+
+.video-info {
+    width: 85%;
+}
+
+.video-info__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #191919;
+}
+
+.video-info__text {
+    font-size: 15px;
+}
+
+.three-dot-video-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.description-wrap {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+}
+
+.view-and-date {
+    color: #191919;
+    font-weight: 700;
+}
+
+.description-content {
+    font-size: 1rem;
+}
+
+.video-header__title {
+    color: #191919;
+    font-size: 1.7em;
+    font-weight: 600;
+}
+
+.video-header__action {
+    display: flex;
+    gap: 10px;
+}
+
+.video-header__action-channel > img {
+    width: 45px;
+    height: 45px;
+}
+
+.video-header__action-username {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+}
+
+.video-header__action-username > .channel-name-info {
+    font-size: 1rem;
+    color: #191919;
+    font-weight: 500;
+}
+
+.btn-subscribe {
+    border-radius: 50px;
+    height: 100%;
+    background-color: #191919;
+    color: #f7f7f7;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-subscribe:hover {
+    background-color: #4a4a4a;
+}
+
+.video-header__action-option {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.btn-like {
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+}
+
+.btn-dislike {
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+.btn-like, .btn-dislike {
+    background-color: #f0f0f0;
+}
+
+.btn-like:hover, .btn-dislike:hover {
+    background-color: #dedddd;
+}
+
+.btn-active > i {
+    color: #76bff1;
+}

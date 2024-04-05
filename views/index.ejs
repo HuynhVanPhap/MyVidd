@@ -2,32 +2,40 @@
     <div class="container my-4" id="videos-container">
         <div class="row text-center">
             <% videos.forEach(video => { %>
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
-                        <img
-                            style="height: 300px; object-fit: cover;"
-                            src="<%= video.thumbnail %>"
-                            alt="videos"
-                            class="card-img-top"
-                        >
-                        <p>
-                            <%= video.minutes + ":" + video.seconds %>
-                        </p>
-
-                        <div class="card-body">
-                            <h4 class="card-title">
-                                <%= video.title %>
-                            </h4>
-
-                            <p class="card-text">
-                                <%= video.category %>
-                            </p>
+                <div class="col-md-4 mb-4">
+                    <a href="/watch/<%= video.watch %>" class="video-container">
+                    <div class="video-wrap">
+                        <div class="thumbnail-video-wrap">
+                            <img
+                                src="<%= video.thumbnail %>"
+                                alt="videos"
+                                class="card-img-top"
+                            >
+                            <span><%= video.minutes + ":" + video.seconds %></span>
                         </div>
 
-                        <div class="card-footer">
-                            <a href="/watch/<%= video.watch %>" class="btn btn-primary">View</a>
+                        <div class="video-info-wrap">
+                            <div class="video-info-channel">
+                                <img
+                                    src="<%= baseUrl + video.user.image %>"
+                                    onerror="this.src = 'http://placehold.it/150x150'"
+                                    class="circle-bars avatar-bars"
+                                >
+                            </div>
+                            <div class="video-info">
+                                <div class="video-info__title three-dot-video-name">
+                                    <%= video.title %>
+                                </div>
+                                <div class="video-info__text">
+                                    <%= video.user.name %>
+                                </div>
+                                <div class="video-info__text">
+                                    <%= video.views + ' lượt xem' %> 
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    </a>
                 </div>
             <% }) %>
         </div>

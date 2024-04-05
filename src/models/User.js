@@ -6,7 +6,7 @@ const userSchema = new Schema({
     password: String,
     coverPhoto: { type: String, default: '' },
     image: { type: String, default: '' },
-    subscribers: { type: Number, default: 0 },
+    subscribers: { type: Array, default: [] },
     subscriptions: { type: Array, default: [] },
     playlist: { type: Array, default: [] },
     videos: [{
