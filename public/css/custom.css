@@ -234,6 +234,10 @@
     padding: 5px;
 }
 
+.video-info-channel > a {
+    all: unset;
+}
+
 .video-info {
     width: 85%;
 }

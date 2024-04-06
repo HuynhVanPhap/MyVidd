@@ -34,6 +34,7 @@ export default class HomeController {
                     isLogin: req.session.user_id ? true : false,
                     user: user,
                     isMyChannel: req.session.user_id == req.params._id,
+                    auth: useAuthData(req.session),
                 });
             }
         }).catch(err => console.log(`Channel : Error when get User ${err}`));
@@ -45,7 +46,8 @@ export default class HomeController {
                 res.render('setting', {
                     isLogin: true,
                     user: user,
-                    request: req.query
+                    request: req.query,
+                    auth: useAuthData(req.session),
                 });
             }).catch(err => console.log(`settingView : Error when get User ${err}`));
         } else {
