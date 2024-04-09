@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from '../repositories/VideoRepository.js';
 import useValidationResult from '../hook/useValidationResult.js';
-import { io } from '../../index.js';
+import useAuthData from '../hook/useAuthData.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -338,7 +338,8 @@ export default class UserController {
             userRepository.getById(req.session.user_id).then(user => {
                 res.render('subscriptions', {
                     isLogin: true,
-                    user: user
+                    user: user,
+                    auth: useAuthData(req.session),
                 })
             }).catch(err => console.log(`SubscribedView : Error when get user ${err}`));
         } else {
@@ -374,5 +375,84 @@ export default class UserController {
         } else {
             res.redirect('/login');
         }
+    }
+
+    channelSubscribe(req, res) {
+        userRepository.getById(req.session.user_id).then(user => {
+            userRepository.update(req.body.channelId, {
+                $push: {
+                    subscribers: {
+                        _id: user._id.toString()
+                    }
+                }
+            });
+
+            userRepository.getById(req.body.channelId).then(channel => {
+                userRepository.update(user._id, {
+                    $push: {
+                        subscriptions: {
+                            _id: channel._id.toString(),
+                            name: channel.name,
+                            subscribers: channel.subscribers.length,
+                            image: channel.image,
+                        }
+                    }
+                });
+            });
+
+            // Update all video subscribers -1
+            videoRepository.findWhereAndUpdate({
+                $and: [
+                    {
+                        'user._id': req.body.channelId,
+                    }
+                ]
+            }, {
+                $inc: {
+                    'user.subscribers': 1
+                }
+            });
+
+            res.json({
+                status: 'success',
+            });
+        }).catch(err => console.log(`Error when get user ${err}`));
+    }
+
+    channelUnsubscribe(req, res) {
+        userRepository.getById(req.session.user_id).then(user => {
+            userRepository.update(user._id, {
+                $pull: {
+                    subscriptions: {
+                        _id: req.body.channelId,
+                    }
+                }
+            });
+
+            userRepository.update(req.body.channelId, {
+                $pull: {
+                    subscribers: {
+                        _id: user._id.toString()
+                    }
+                }
+            });
+
+            // Update all video subscribers -1
+            videoRepository.findWhereAndUpdate({
+                $and: [
+                    {
+                        'user._id': req.body.channelId,
+                    }
+                ]
+            }, {
+                $inc: {
+                    'user.subscribers': -1
+                }
+            });
+
+            res.json({
+                status: 'success',
+            });
+        }).catch(err => console.log(`Error when get user ${err}`));
     }
 }

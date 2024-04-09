@@ -181,4 +181,102 @@
         
         window.location = window.location = baseUrl + `channel/${event.target.getAttribute('data-channel-id')}`;
     }
+
+    function togglePopupOptionSubscribe(self) {
+        const optionPopup = self.querySelector(".option-subscriber");
+
+        if (getComputedStyle(optionPopup).display != 'block') {
+            optionPopup.style.display = 'block';
+        } else {
+            optionPopup.style.display = 'none';
+        }
+
+        return;
+    }
+
+    function unSubscribe(self) {
+        const channelId = self.parentNode.getAttribute("data-subscribe-id");
+
+        const ajax = new XMLHttpRequest();
+
+        ajax.open('POST', '/user/channel/unsubscribe', true);
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+
+                if (response.status == 'success') {
+                    const subscribeWrap = self.parentNode.closest(".subscribe-wrap");
+                    const subscribeWrapParent = subscribeWrap.parentNode;
+                    const subscribers = subscribeWrapParent.parentNode.querySelector(".subscribers-subscription");
+                    const numSubscribers = parseInt(subscribers.innerText.replace(/\D/g, "")) - 1;
+
+                    subscribeWrap.remove();
+                    // Add subscribe button
+                    subscribeWrapParent.innerHTML = btnSubscribeHTML(channelId);
+                    subscribers.innerText = `${numSubscribers} subscribers`;
+                }
+            }
+        }
+
+        ajax.send(`channelId=${channelId}`);
+    }
+
+    function subscribe(self) {
+        const channelId = self.getAttribute("data-subscribe-id");
+        const ajax = new XMLHttpRequest();
+
+        ajax.open('POST', '/user/channel/subscribe', true);
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+
+                if (response.status == 'success') {
+                    const subscribeWrapParent = self.parentNode;
+                    const subscribers = subscribeWrapParent.parentNode.querySelector(".subscribers-subscription");
+                    const numSubscribers = parseInt(subscribers.innerText.replace(/\D/g, "")) + 1;
+
+                    self.remove();
+                    // Add Unsubscribe button
+                    subscribeWrapParent.innerHTML = btnUnsubscribeHTML(channelId);
+                    subscribers.innerText = `${numSubscribers} subscribers`;
+                }
+            }
+        }
+
+        ajax.send(`channelId=${channelId}`);
+    }
+
+    function btnSubscribeHTML(channelId) {
+        let html = '';
+
+        html += `<button class="btn btn-login" type="button" onclick="subscribe(this);" data-subscribe-id="${channelId}">`;
+        html += 'Subscribe';
+        html += '</button>';
+
+        return html;
+    }
+
+    function btnUnsubscribeHTML(channelId) {
+        let html = '';
+
+        html += `<div class="subscribe-wrap" style="position: relative;" onclick="togglePopupOptionSubscribe(this);">`;
+            html += '<div class="btn btn-login">';
+                html += '<i class="far fa-bell"></i>';
+                html += '<span>Subscribed</span>';
+                html += '<i class="fas fa-angle-down"></i>';
+            html += '</div>';
+            html += `<div class="option-subscriber" data-subscribe-id="${channelId}">`;
+                html += '<div onclick="unSubscribe(this);">';
+                    html += '<i class="fas fa-user-slash"></i>';
+                    html += '<span>Unsubscribe</span>';
+                html += '</div>';
+            html += '</div>';
+        html += '</div>';
+
+        return html;
+    }
 </script>

@@ -5,7 +5,6 @@ import useValidationResult from '../hook/useValidationResult.js';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from "../repositories/VideoRepository.js";
 import useAuthData from '../hook/useAuthData.js';
-import { io } from '../../index.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -484,7 +483,7 @@ export default class VideoController {
                                     watched: req.body.watched,
                                     thumbnail: video.thumbnail,
                                     minutes: video.minutes,
-                                    seconds: video.seconds
+                                    seconds: video.seconds,
                                 }
                             }
                         });
@@ -526,7 +525,8 @@ export default class VideoController {
             userRepository.getById(req.session.user_id).then(user => {
                 res.render('video/history', {
                     isLogin: true,
-                    videos: user.history
+                    videos: user.history,
+                    auth: useAuthData(req.session),
                 });
             }).catch(err => console.log(`HistoryList: Error when get User ${err}`));
         } else {

@@ -12,6 +12,10 @@ router.post('/read-notification', userController.readNotification);
 
 router.post('/subscribe', userController.subscribe);
 
+router.post('/channel/subscribe', userController.channelSubscribe);
+
+router.post('/channel/unsubscribe', userController.channelUnsubscribe);
+
 router.get('/subscribed', userController.subscribedView);
 
 router.post('/subscribed/remove', userController.subscribedRemove);
