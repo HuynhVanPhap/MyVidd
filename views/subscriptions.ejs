@@ -1,41 +1,47 @@
 <%- include('layouts/header') %>
     <div class="container my-4">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Subscribed Channel</h1>
-            </div>
-        </div>
-        <div class="row">
-            <%
-                const subscriptions = user.subscriptions.reverse();
-                subscriptions.forEach(subscription => {
-            %>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <img
-                            src="<%= baseUrl + subscription.image %>" class="card-img-top"
-                            onerror="this.src = 'http://placehold.it/1900x700'"
-                        >
-                        <div class="card-body">
-                            <h4 class="card-title">
-                                <%= subscription.title %>
-                                <span style="font-size: 14px; font-weight: normal; float: right; position: relative; top: 7px;">
-                                    <%= subscription.subscribers %> subscribers
-                                </span>
-                            </h4>
+        <%
+            const subscriptions = user.subscriptions.reverse();
+            subscriptions.forEach(subscription => {
+        %>
+            <div class="row h-70">
+                <div class="col-md-3 text-center">
+                    <img
+                        src="<%= baseUrl + subscription.image %>"
+                        style="width: 70%;"
+                        class="circle-bars"
+                        onerror="this.src = 'http://placehold.it/1900x700'"
+                        
+                    >
+                </div>
+                <div class="col-md-7">
+                    <div class="row">
+                        <div class="col-md-12 name-subscription">
+                            <%= subscription.name %>
                         </div>
-
-                        <div class="card-footer">
-                            <a href="/channel/<%= subscription._id %>" class="btn btn-primary">View</a>
-
-                            <form action="/user/subscribed/remove" method="POST" onsubmit="return confirm('Do you really want continue delete this subscribed ?');" style="display: contents;">
-                                <input type="hidden" name="_id" value="<%= subscription._id %>">
-                                <button class="btn btn-danger" type="submit">Delete</button>
-                            </form>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 subscribers-subscription">
+                            <%= subscription.subscribers %> subscribers
                         </div>
                     </div>
                 </div>
-            <% }) %>
-        </div>
+                <div class="col-md-2" style="display: grid; place-items: center;">
+                    <div class="subscribe-wrap" style="position: relative;" onclick="togglePopupOptionSubscribe(this);">
+                        <div class="btn btn-login">
+                            <i class="far fa-bell"></i>
+                            <span>Subscribed</span>
+                            <i class="fas fa-angle-down"></i>
+                        </div>
+                        <div class="option-subscriber" data-subscribe-id="<%= subscription._id %>">
+                            <div onclick="unSubscribe(this);">
+                                <i class="fas fa-user-slash"></i>
+                                <span>Unsubscribe</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
     </div>
 <%- include('layouts/footer') %>

@@ -342,3 +342,36 @@
 .btn-active > i {
     color: #76bff1;
 }
+
+.name-subscription {
+    font-size: 2rem;
+    color: #252626;
+    font-weight: 500;
+}
+
+.subscribers-subscription {
+    font-size: 1rem;
+}
+
+.option-subscriber {
+    position: absolute;
+    background-color: #faffff;
+    right: 0;
+    border-radius: 5px;
+    padding: 5px 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #299ce1;
+    font-weight: 600;
+    border: 1px solid #faffff;
+    box-shadow: 1px 1px 5px #7d8080;
+    display: none;
+}
+
+.option-subscriber > div {
+    padding: 7px 20px;
+}
+
+.option-subscriber > div:hover {
+    background-color: #c6eefe;
+}
