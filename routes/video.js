@@ -52,4 +52,10 @@ router.get('/video/search/category/:category', videoController.searchCategory);
 
 router.get('/video/search/tags/:tag', videoController.searchTag);
 
+router.get('/video/get-videos', videoController.getVideos);
+
+router.get('/video/filter/channel', videoController.filterByChannel);
+
+router.get('/video/filter/category', videoController.filterByCategory);
+
 export default router;

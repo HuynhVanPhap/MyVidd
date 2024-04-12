@@ -19,3 +19,9 @@
 *
 * https://stackoverflow.com/questions/23160743/how-to-send-flash-messages-in-express-4-0
 */
+
+/**
+* # Express request is called twice
+*
+* https://stackoverflow.com/questions/13150277/express-request-is-called-twice
+*/

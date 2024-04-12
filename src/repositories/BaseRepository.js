@@ -3,8 +3,8 @@ export default class BaseRepository {
         this.model = model;
     }
 
-    async all() {
-        return await this.model.find().sort({ createdAt: -1 }).exec();
+    async all(select = ['']) {
+        return await this.model.find().select(select.join(' ')).sort({ createdAt: -1 }).exec();
     }
     /**
      * 
@@ -43,8 +43,8 @@ export default class BaseRepository {
         return await this.model.findOneAndUpdate(where, params).exec();
     }
 
-    async findMany(where = {}) {
-        return await this.model.find(where).exec();
+    async findMany(where = {}, select = ['']) {
+        return await this.model.find(where).select(select.join(' ')).exec();
     }
     
     async removeWhere(where) {

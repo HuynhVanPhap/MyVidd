@@ -5,6 +5,13 @@
             userId: localStorage.userId,
         },
     });
+    var ajax = new XMLHttpRequest();
+
+    const getVideosUrl = {
+        all: '/video/get-videos',
+        channel: '/video/filter/channel',
+        category: '/video/filter/category',
+    }
 
     window.onbeforeunload = function (event) {
         event.preventDefault();
