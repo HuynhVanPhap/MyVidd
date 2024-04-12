@@ -1,7 +1,8 @@
 <%- include("layouts/header") %>
     <div class="container my-4" id="videos-container">
+        <% videos.forEach(chunkVideos => { %>
         <div class="row text-center">
-            <% videos.forEach(video => { %>
+            <% chunkVideos.forEach(video => { %>
                 <div class="col-md-4 mb-4">
                     <a href="/watch/<%= video.watch %>" class="video-container">
                         <div class="video-wrap">
@@ -41,5 +42,6 @@
                 </div>
             <% }) %>
         </div>
+        <% }) %>
     </div>
 <%- include("layouts/footer") %>

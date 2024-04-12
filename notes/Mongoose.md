@@ -18,3 +18,15 @@
 *
 * https://www.mongodb.com/docs/manual/reference/connection-string/
 */
+
+/**
+* # Get specific part of document
+*
+* https://stackoverflow.com/questions/5301795/get-specific-part-of-document
+*/
+
+/**
+* # Get specific part of document on mongoose
+*
+* https://mongoosejs.com/docs/queries.html
+*/

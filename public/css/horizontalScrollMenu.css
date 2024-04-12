@@ -1,0 +1,90 @@
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-wrapper {
+    position: relative; /* Required for arrow keys to be absolutely positioned child divs inside menu-wrapper parent. */
+    width: 100%;
+    /* height: 100px;  Intentionally shorter than menu items, to hide horizontal scroll bar. */
+    /* margin: 1em auto; */
+    /* border: 1px solid black; */
+    overflow-x: hidden;
+    overflow-y: hidden;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.menu {
+    /* height: 120px; */
+    /* background: #f3f3f3; */
+    box-sizing: border-box;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    position: relative; /* Required for animation. */
+    display: flex;
+    align-items: center;
+    gap: 20px;  /* Flexbox space between menu items must match the left/right padding of menu wrapper. */
+    padding: 5px;
+}
+
+.menu .item {
+    background: #f3f3f3;  /* Weird - Visible items inherit this from .menu but not hidden items# 6-8 when they slide in and can be seen. */
+    height: 2rem;
+    /* outline: 1px dotted gray; */
+    box-sizing: border-box;
+    border-radius: 5px;
+    display: flex;            /* Needed to center number in middle of menu item, solution # 1 of 3. */
+    align-items: center;      /* Needed to vertically center number in middle of menu item, solution # 2 of 3. */
+    justify-content: center;  /* Needed to horizontally center number in middle of menu item, solution # 3 of 3. */
+    padding: 0 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.item:hover {
+    background-color: #c8cccc;
+}
+
+.arrow-wrap {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    background-color: #fafafa;
+    box-shadow: 1px 10px 5px 5px #fafafa;
+}
+
+.arrow {
+    width: 40px;
+    height: 40px;
+    /* width: 3em; Excluding width means that arrow div will only be as wide as it needs to be to contain the < or > characters. */
+}
+
+.arrow:hover {
+    background-color: #f3f3f3;
+}
+
+.arrow:active {
+    background-color: #c8cccc;
+    outline: unset;
+}
+
+.left-arrow {
+    left: 0;
+}
+
+.right-arrow {
+    right: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.active {
+    background-color: #191919 !important;
+    color: #f3f3f3;
+}

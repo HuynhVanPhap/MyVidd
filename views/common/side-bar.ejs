@@ -1,54 +1,90 @@
 <div class="row">
     <div class="col-md-12">
-        <div class="card my-4">
-            <h5 class="card-header">Tags</h5>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <ul class="list-unstyled mb-0">
-                            <%
-                                const tags = video.tags.split(',');
-                                tags.forEach(tag => {
-                            %>
-                                <li>
-                                    <a href="/video/search/tags/<%= tag %>"><%= '#'+tag %></a>
-                                </li>
-                            <% }) %>
-                        </ul>
-                    </div>
-                </div>
+        <div id="menu-wrapper" class="menu-wrapper">
+            <ul id="menu" class="menu">
+                <li class="item active" data-filter-by="all" data-filter="all">Tất cả</li>
+                <li class="item" data-filter-by="channel" data-filter="<%= video.user._id %>">Của <%= video.user.name %></li>
+                <li class="item" data-filter-by="category" data-filter="<%= video.category %>">Cùng danh mục</li>
+            </ul>
+        </div>
+
+        <div class="arrows">
+            <div class="arrow-wrap left-arrow hidden" id="leftArrow">
+                <button class="btn circle-bars arrow">
+                    <i class="fas fa-angle-left"></i>
+                </button>
+            </div>
+            <div class="arrow-wrap right-arrow" id="rightArrow">
+                <button class="btn circle-bars arrow">
+                    <i class="fas fa-angle-right"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="col-md-12">
-        <% if (playlist.length > 0) { %>
-            <div class="card my-4">
-                <h5 class="card-header">Playlist</h5>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <ul class="list-unstyled mb-0">
-                                <% playlist.forEach(item => { %>
-                                    <% if (item.watch == video.watch) { %> 
-                                        <li style="background: lightgray;">
-                                    <% } else { %>
-                                        <li>
-                                    <% } %>
-                                            <img src="<%= baseUrl + video.thumbnail %>" class="img-fluid">
-                                            <h3>
-                                                <a href="/video/playlist/<%= playlistId %>/<%= video.watch %>"><%= video.title %></a>
-                                            </h3>
-                                        </li>
-                                <% }) %>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        <% } %>
-    </div>
-    <div class="col-md-12">
-        <%- include('related-videos') %>
+    <div class="col-md-12 mt-2">
+        <div id="listVideosVertical" class="d-flex flex-column" style="gap: 5px;"></div>
     </div>
 </div>
+
+<script>
+    var ajax = new XMLHttpRequest();
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        getVideos();
+    });
+
+    function getVideos(filterBy = 'all', filter = '') {
+        ajax.open("GET", getVideosUrl[filterBy]+'?filter='+filter, true);
+    
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+                let html = '';
+    
+                response.videos.forEach(video => {
+                    html += createVideoSidebar(video);
+                });
+    
+                document.querySelector("#listVideosVertical").innerHTML = html;
+            }
+        }
+    
+        ajax.send();
+    }
+
+    const items = document.querySelector("#menu");
+
+    items.addEventListener("click", function(event) {
+        if (event.target.classList.contains("item")) {
+            items.querySelector(".active").classList.remove("active");
+    
+            event.target.classList.add("active");
+    
+            const dataFilter = event.target.getAttribute("data-filter");
+            const filterBy = event.target.getAttribute("data-filter-by");
+
+            getVideos(filterBy, dataFilter);
+        }
+    });
+
+    function createVideoSidebar(video) {
+        let html = '';
+
+        html += `<a href="/watch/${video.watch}" class="clear-href">`;
+            html += '<div class="video-sidebar d-flex">';
+                html += '<div class="video-sidebar-wrap">';
+                    html += `<img src="${baseUrl}${video.thumbnail}" class="img-fluid">`;
+                    html += `<span>${video.minutes}:${video.seconds}</span>`;
+                html += '</div>';
+                html += '<div class="video-sidebar-info">';
+                    html += `<div class="video-sidebar-info__title three-dot-video-name">${video.title}</div>`; 
+                    html += `<div class="video-sidebar-info__channel">${video.user.name}</div>`;
+                    html += `<div class="video-sidebar-info__views">${video.views} views</div>`;
+                html += '</div>';
+            html += '</div>';
+        html += '</a>';
+
+        return html;
+    }
+</script>

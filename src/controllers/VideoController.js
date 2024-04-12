@@ -14,6 +14,7 @@ export default class VideoController {
         if (req.session.user_id) {
             res.render('upload', {
                 isLogin: true,
+                auth: useAuthData(req.session),
             });
         } else {
             res.redirect('/login');
@@ -156,6 +157,7 @@ export default class VideoController {
 
                     return;
                 }
+
                 res.render("video/watch", {
                     isLogin: req.session.user_id ? true : false,
                     video: video,
@@ -948,5 +950,65 @@ export default class VideoController {
                 console.log('Page streaming error: ' + err);
             });
         }).catch(err => console.log(`Streaming get video error ${err}`));
+    }
+
+    getVideos(req, res) {
+        videoRepository.all([
+            'watch',
+            'thumbnail',
+            'title',
+            'user',
+            'views',
+            'minutes',
+            'seconds',
+        ]).then(videos => {
+            res.json({
+                videos,
+            });
+        });
+    }
+
+    filterByChannel(req, res) {
+        videoRepository.findMany({
+            $and: [
+                {
+                    'user._id': req.query.filter,
+                }
+            ]
+        }, [
+            'watch',
+            'thumbnail',
+            'title',
+            'user',
+            'views',
+            'minutes',
+            'seconds',
+        ]).then(videos => {
+            res.json({
+                videos,
+            });
+        });
+    }
+
+    filterByCategory(req, res) {
+        videoRepository.findMany({
+            $and: [
+                {
+                    category: req.query.filter,
+                }
+            ]
+        }, [
+            'watch',
+            'thumbnail',
+            'title',
+            'user',
+            'views',
+            'minutes',
+            'seconds',
+        ]).then(videos => {
+            res.json({
+                videos,
+            });
+        })
     }
 }

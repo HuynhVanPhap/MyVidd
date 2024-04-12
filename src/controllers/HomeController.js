@@ -8,20 +8,37 @@ const videoRepository = new VideoRepository();
 const userRepository = new UserRepository();
 export default class HomeController {
     index(req, res) {
-        videoRepository.all().then(videos => {
+        videoRepository.all([
+            'watch',
+            'thumbnail',
+            'title',
+            'user',
+            'views',
+            'minutes',
+            'seconds',
+        ]).then(videos => {
+            const chunkSize = 3;
+            // How to chunk data on Js
+            const chunksVideo = videos.reduce((acc, curr, i) => {
+                if (i % chunkSize === 0) {
+                    acc.push([]);
+                }
+                acc[acc.length - 1].push(curr);
+                return acc;
+            }, []);
+
             if (req.session.user_id) {
                 res.render("index", {
                     isLogin: true,
                     auth: useAuthData(req.session),
-                    videos: videos,
+                    videos: chunksVideo,
                 });
             } else {
                 res.render("index", {
                     isLogin: false,
-                    videos: videos,
+                    videos: chunksVideo,
                 });
             }
-
         });
     }
 
