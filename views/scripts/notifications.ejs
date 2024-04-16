@@ -69,7 +69,6 @@
                     }
 
                     if (self.getAttribute('data-watch') != null) {
-                        console.log('Net');
                         window.location = baseUrl + `watch/${self.getAttribute('data-watch')}`;
                         return;
                     }
@@ -86,7 +85,9 @@
         const contentNotification = document.querySelector('.content-notification');
         const btnNotification = document.querySelector('.btn-noti');
 
-        btnNotification.removeChild(btnNotification.querySelector('.noti-number'));
+        if (btnNotification.querySelector('.noti-number') != null) {
+            btnNotification.removeChild(btnNotification.querySelector('.noti-number'));
+        }
 
 
         let btnHtml = btnNotification.innerHTML;

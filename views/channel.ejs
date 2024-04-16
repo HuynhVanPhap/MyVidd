@@ -12,7 +12,7 @@
                 accept="image/*"
                 name="image"
                 required
-                onchange="document.getElementById('form-change-profile-picture').submit();"
+                onchange="uploadAvatar(this);"
             >
         </form>
 
@@ -24,7 +24,7 @@
                 accept="image/*"
                 name="image"
                 required
-                onchange="document.getElementById('form-change-cover-picture').submit();"
+                onchange="uploadCoverPhoto(this);"
             >
         </form>
     <% } %>
@@ -69,11 +69,42 @@
                 </div>
                 <div class="col-md-8">
                     <h3><%= user.name %></h3>
-                    <p><%= user.subscribers.length %> Subscribers</p>
+                    <p class="subscribers-subscription"><%= user.subscribers.length %> subscribers</p>
                 </div>
+
+                <% if (isLogin) { %>
+                    <% if (isMyChannel) { %>
+                        <div class="col-md-2 align-self-end">
+                            <a href="/upload" class="btn btn-login"><i class="fas fa-cloud-upload-alt"></i> Upload video</a>
+                        </div>
+                    <% } else { %>
+                        <div class="col-md-2 align-self-end">
+                            <% if (subscriber != null) { %>
+                                <div class="subscribe-wrap" style="position: relative;" onclick="togglePopupOptionSubscribe(this);">
+                                    <div class="btn btn-login">
+                                        <i class="far fa-bell"></i>
+                                        <span>Subscribed</span>
+                                        <i class="fas fa-angle-down"></i>
+                                    </div>
+                                    <div class="option-subscriber" data-subscribe-id="<%= user._id %>">
+                                        <div onclick="unSubscribe(this);">
+                                            <i class="fas fa-user-slash"></i>
+                                            <span>Unsubscribe</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <button class="btn btn-login" type="button" onclick="subscribe(this);" data-subscribe-id="<%= user._id %>">
+                                    Subscribe
+                                </button>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } %>
             </div>
 
-            <% if (isMyChannel) { %>
+            <!-- Playlist function create -->
+            <!-- <% if (isMyChannel) { %>
                 <form action="/video/playlist/create" method="POST">
                     <div class="form-group">
                         <label>Playlist title</label>
@@ -86,7 +117,7 @@
                     </div>
                     <input type="submit" class="btn btn-primary" value="Create List">
                 </form>
-            <% } %>
+            <% } %> -->
 
             <div class="row my-4">
                 <%
@@ -124,38 +155,152 @@
             
             <hr>
 
-            <h3>Channel Videos</h3>
+            <h3>My Videos</h3>
 
             <hr>
 
+            <% 
+                const chunkSize = 3;
+
+                // How to chunk data on Js
+                const chunkVideos = user.videos.reverse().reduce((acc, curr, i) => {
+                    if (i % chunkSize === 0) {
+                        acc.push([]);
+                    }
+                    acc[acc.length - 1].push(curr);
+                    return acc;
+                }, []);
+
+                chunkVideos.forEach(videos => {
+            %>
             <div class="row">
-                <%
-                    user.videos = user.videos.reverse();
-                    user.videos.forEach(video => {
-                %>
+                <% videos.forEach(video => { %>
                     <div class="col-md-4">
-                        <div class="card h-100">
-                            <img src="<%= baseUrl + video.thumbnail %>" class="card-img-top">
-                            <div class="card-body">
-                                <h4 class="card-title"><%= video.title %></h4>
-                                <p class="card-text"><%= video.category %></p>
+                        <a href="/watch/<%= video.watch %>" class="video-container">
+                            <div class="video-wrap">
+                                <div class="thumbnail-video-wrap">
+                                    <img
+                                        src="<%= baseUrl + video.thumbnail %>"
+                                        alt="videos"
+                                        class="card-img-top"
+                                    >
+                                    <span><%= video.minutes + ":" + video.seconds %></span>
+                                </div>
+    
+                                <div class="video-info-wrap">
+                                    <div class="video-info-channel">
+                                        <img
+                                            src="<%= baseUrl + user.image %>"
+                                            onerror="this.src = 'http://placehold.it/150x150'"
+                                            class="circle-bars avatar-bars"
+                                            data-channel-id="<%= user._id %>"
+                                            onclick="redirectToChannel(event);"
+                                        />
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-info__title three-dot-video-name">
+                                            <%= video.title %>
+                                        </div>
+                                        <div class="video-info__text">
+                                            <%= user.name %>
+                                        </div>
+                                        <div class="video-info__text">
+                                            <%= video.views + ' lượt xem' %> 
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-footer">
-                                <a href="/watch/<%= video.watch %>" class="btn btn-primary">View</a>
+                        </a>
+                        <!-- <div class="card-footer">
+                            <a href="/watch/<%= video.watch %>" class="btn btn-primary">View</a>
 
-                                <% if (isMyChannel) { %>
-                                    <a href="/video/edit/<%= video.watch %>" class="btn btn-warning">Edit</a>
+                            <% if (isMyChannel) { %>
+                                <a href="/video/edit/<%= video.watch %>" class="btn btn-warning">Edit</a>
 
-                                    <form action="/video/delete" method="POST" onsubmit="return confirm('Do you really want continue delete this video ?');" style="display: contents;">
-                                        <input type="hidden" name="_id" value="<%= video._id %>">
-                                        <button class="btn btn-danger" type="submit">Delete</button>
-                                    </form>
-                                <% } %>
-                            </div>
-                        </div>
+                                <form action="/video/delete" method="POST" onsubmit="return confirm('Do you really want continue delete this video ?');" style="display: contents;">
+                                    <input type="hidden" name="_id" value="<%= video._id %>">
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                </form>
+                            <% } %>
+                        </div> -->
                     </div>
                 <% }) %>
             </div>
+            <% }) %>
         </div>
     </div>
+
+    <script>
+        function uploadAvatar(self) {
+            const form = document.getElementById("form-change-profile-picture");
+            // const file = form.querySelector('input[name="image"]').files[0];
+            const ajax = new XMLHttpRequest();
+            const formData = new FormData(form);
+
+            ajax.open(form.method, form.action, true);
+            // ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Not use when upload file
+            
+            ajax.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const response = JSON.parse(this.responseText);
+                    
+                    if (response.type === 'error') {
+                        alert(response.errors.image.msg);
+                    }
+
+                    if (response.type === 'success') {
+                        window.location = `${baseUrl}channel/${response.channelId}`;
+                    }
+
+                    if (response.type === 'login') {
+                        window.location = baseUrl + 'login';
+                    }
+                }
+            }
+            
+            // formData.append(file.name, file);
+
+            ajax.send(formData);
+            
+            return true;
+        }
+
+        function uploadCoverPhoto(self) {
+            const form = document.getElementById("form-change-cover-picture");
+            const ajax = new XMLHttpRequest();
+            const formData = new FormData(form);
+
+            ajax.open(form.method, form.action, true);
+            
+            ajax.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const response = JSON.parse(this.responseText);
+
+                    if (response.type === 'error') {
+                        alert(response.errors.image.msg);
+                    }
+                    
+                    if (response.type === 'success') {
+                        const reader = new FileReader();
+                        const file = form.querySelector('input[name="image"]').files[0];
+                        const previewImage = document.querySelector('.cover-photo');
+
+                        reader.onload = function(event) {
+                            previewImage.src = event.target.result;
+                        }
+
+                        reader.readAsDataURL(file);
+                    }
+
+                    if (response.type === 'login') {
+                        window.location = baseUrl + 'login';
+                    }
+                }
+            }
+            
+            ajax.send(formData);
+            
+            return true;
+        }
+    </script>
 <%- include("layouts/footer") %>

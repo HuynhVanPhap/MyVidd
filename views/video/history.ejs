@@ -1,33 +1,20 @@
 <%- include("../layouts/header") %>
     <div class="container my-4">
+        <% chunkVideos.forEach(videos => { %>
         <div class="row text-center">
             <% videos.forEach(video => { %>
-                <div class="col-md-3 mb-4">
+                <%
+                    const videoDuration = (video.minutes * 60) + video.seconds;
+                    const minutes = Math.floor(video.watched /60);
+                    const seconds = video.watched - (minutes * 60);
+                %>
+                <!-- <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <img src="<%= baseUrl + video.thumbnail %>" class="card-img-top">
                         
                         <div class="card-body">
                             <h4 class="card-title"><%= video.title %></h4>
                             <p class="card-text"><%= video.category %></p>
-
-                            <%
-                                const videoDuration = (video.minutes * 60) + video.seconds;
-                                const minutes = Math.floor(video.watched /60);
-                                const seconds = video.watched - (minutes * 60);
-                            %>
-
-                            <div class="progress">
-                                <div 
-                                    class="progress-bar"
-                                    role="progressbar"
-                                    style="width: <%= Math.floor((video.watched / videoDuration) * 100) %>;"
-                                    aria-valuenow="<%= video.watched %>"
-                                    aria-valuemin="0"
-                                    aria-valuemax="<%= videoDuration %>"
-                                >
-                                    <%= minutes + ":" + seconds %>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="card footer">
@@ -38,8 +25,59 @@
                             </form>
                         </div>
                     </div>
+                </div> -->
+                <div class="col-md-4">
+                    <a href="/watch/<%= video.watch %>" class="video-container">
+                        <div class="video-wrap">
+                            <div class="thumbnail-video-wrap">
+                                <img
+                                    src="<%= baseUrl + video.thumbnail %>"
+                                    alt="videos"
+                                    class="card-img-top"
+                                >
+                                <span><%= video.minutes + ":" + video.seconds %></span>
+
+                                <div class="progress progress-side-video">
+                                    <div 
+                                        class="progress-bar progress-bar-weight"
+                                        role="progressbar"
+                                        style="width: <%= Math.floor((video.watched / videoDuration) * 100) %>;"
+                                        aria-valuenow="<%= video.watched %>"
+                                        aria-valuemin="0"
+                                        aria-valuemax="<%= videoDuration %>"
+                                    >
+                                        <!-- <%= minutes + ":" + seconds %> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="video-info-wrap">
+                                <div class="video-info-channel">
+                                    <img
+                                        src="<%= baseUrl + video.user.image %>"
+                                        onerror="this.src = 'http://placehold.it/150x150'"
+                                        class="circle-bars avatar-bars"
+                                        data-channel-id="<%= video.user._id %>"
+                                        onclick="redirectToChannel(event);"
+                                    />
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-info__title three-dot-video-name">
+                                        <%= video.title %>
+                                    </div>
+                                    <div class="video-info__text">
+                                        <%= video.user.name %>
+                                    </div>
+                                    <div class="video-info__text">
+                                        <%= video.views + ' lượt xem' %> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             <% }) %>
         </div>
+        <% }) %>
     </div>
 <%- include("../layouts/footer") %>

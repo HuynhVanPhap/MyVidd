@@ -47,9 +47,14 @@ export default class HomeController {
             if (user == null) {
                 res.send('Channel not found !');
             } else {
+                const subscriber = user.subscribers.find(sub => {
+                    return sub._id === req.session.user_id;
+                });
+
                 res.render('channel', {
                     isLogin: req.session.user_id ? true : false,
                     user: user,
+                    subscriber,
                     isMyChannel: req.session.user_id == req.params._id,
                     auth: useAuthData(req.session),
                 });

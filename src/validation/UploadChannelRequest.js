@@ -2,9 +2,9 @@ import { ExpressValidator } from "express-validator";
 import { IMAGE_ALLOWED } from "../config/constraint.js";
 
 const { checkSchema } = new ExpressValidator({
-    IsImage: (value, { req }) => {
-        if (req.files != undefined) {
-            if(!IMAGE_ALLOWED.includes(req.files.mimetype)) {
+    IsImage: async (value, { req }) => {
+        if (req.file != undefined) {
+            if(!IMAGE_ALLOWED.includes(req.file.mimetype)) {
                 return Promise.reject();
             }
         }
@@ -12,9 +12,9 @@ const { checkSchema } = new ExpressValidator({
 });
 
 const uploadChannelRequest = checkSchema({
-    title: {
-        notEmpty: true
-    },
+    // title: {
+    //     notEmpty: true
+    // },
     image: {
         IsImage: {
             errorMessage: 'The uploaded file is not in the correct format !',

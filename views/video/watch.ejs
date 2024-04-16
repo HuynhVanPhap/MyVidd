@@ -68,7 +68,7 @@
                     <div class="col-md-12 my-2">
                         <div class="description-wrap">
                             <div class="view-and-date my-1">
-                                <%= video.views + ' views' %>   Posted on <%= date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear() %>
+                                <%= (video.views + 1) + ' views' %>   Posted on <%= date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear() %>
                             </div>
                             <div class="description-content my-1">
                                 <%= video.description %>

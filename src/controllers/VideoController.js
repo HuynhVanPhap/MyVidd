@@ -63,7 +63,7 @@ export default class VideoController {
                                 user: {
                                     _id: user._id,
                                     name: user.name,
-                                    image: '',
+                                    image: user.image,
                                     subscribers: 0,
                                 },
                                 filePath: pathVideo,
@@ -88,6 +88,9 @@ export default class VideoController {
                                             views: video.views,
                                             thumbnail: video.thumbnail,
                                             watch: video.watch,
+                                            hours: hours,
+                                            minutes: minutes,
+                                            seconds: seconds,
                                         }
                                     }
                                 })
@@ -118,6 +121,30 @@ export default class VideoController {
                 videoRepository.update(video._id, {
                     $inc: {
                         "views": 1
+                    }
+                });
+
+                // User own video
+                userRepository.updateWhere({
+                    $and: [
+                        {
+                            _id: video.user._id
+                        },
+                        {
+                            'videos._id': video._id.toString()
+                        }
+                    ]
+                }, {
+                    $inc: {
+                        'videos.$.views': 1,
+                    }
+                });
+
+                userRepository.updateMany({
+                    'history.user._id': video.user._id,
+                }, {
+                    $inc: {
+                        'history.$.views': 1,
                     }
                 });
 
@@ -165,6 +192,8 @@ export default class VideoController {
                     playlistId: '',
                     auth: useAuthData(req.session),
                 });
+
+                return;
             }
         })
         .catch(err => console.log(`Error when get video watch ${err}`));
@@ -484,8 +513,14 @@ export default class VideoController {
                                     title: video.title,
                                     watched: req.body.watched,
                                     thumbnail: video.thumbnail,
+                                    views: video.views,
                                     minutes: video.minutes,
                                     seconds: video.seconds,
+                                    user: {
+                                        _id: video.user._id,
+                                        name: video.user.name,
+                                        image: video.user.image,
+                                    },
                                 }
                             }
                         });
@@ -525,9 +560,20 @@ export default class VideoController {
     historyList(req, res) {
         if (req.session.user_id) {
             userRepository.getById(req.session.user_id).then(user => {
+                const chunkSize = 3;
+
+                // How to chunk data on Js
+                const chunkVideos = user.history.reverse().reduce((acc, curr, i) => {
+                    if (i % chunkSize === 0) {
+                        acc.push([]);
+                    }
+                    acc[acc.length - 1].push(curr);
+                    return acc;
+                }, []);
+
                 res.render('video/history', {
                     isLogin: true,
-                    videos: user.history,
+                    chunkVideos,
                     auth: useAuthData(req.session),
                 });
             }).catch(err => console.log(`HistoryList: Error when get User ${err}`));

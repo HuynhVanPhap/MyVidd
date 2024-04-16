@@ -76,3 +76,9 @@
 *
 * https://stackoverflow.com/questions/26560366/how-to-decrement-like-dec
 */
+
+/**
+* # Cannot upload file using multer via Ajax
+*
+* https://stackoverflow.com/questions/49826266/nodejs-cannot-upload-file-using-multer-via-ajax 
+*/

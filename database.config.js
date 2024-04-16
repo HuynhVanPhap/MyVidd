@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const url = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
+// const url = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
+const url = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@myvidd.uyyohyn.mongodb.net/?retryWrites=true&w=majority&appName=MyVidd`;
 
 export const mongoClientPromise = new Promise((resolve) => {
     mongoose.connection.on('connected', () => {
