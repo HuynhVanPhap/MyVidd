@@ -94,3 +94,19 @@
 *
 * https://stackoverflow.com/questions/359788/how-to-execute-a-javascript-function-when-i-have-its-name-as-a-string
 */
+
+/**
+* # FormData
+*
+* Tạo cấu trúc dữ liệu dạng Form để send dữ liệu kiểu Ajax
+*
+* https://www.freecodecamp.org/news/formdata-explained/
+*/
+
+/**
+* # FileReader
+*/
+
+/**
+* # Auto-Generate YouTube Thumbnails From Your Video on Js
+*/

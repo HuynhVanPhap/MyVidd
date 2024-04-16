@@ -153,6 +153,8 @@ export default class UserController {
                         status: 'error',
                         message: 'This is your channel. Stupid !'
                     });
+
+                    return false;
                 } else {
                     userRepository.getById(req.session.user_id).then(user => {
                         const filter = user.subscriptions.find(subscribe => {
@@ -160,20 +162,28 @@ export default class UserController {
                         });
 
                         if (filter != undefined) {
-                            userRepository.update(user._id, {
-                                $pull: {
-                                    subscriptions: {
-                                        _id: video.user._id
-                                    }
-                                }
-                            });
-
                             userRepository.update(video.user._id, {
                                 $pull: {
                                     subscribers: {
                                         _id: user._id.toString()
                                     }
                                 }
+                            }).then(() => {
+                                userRepository.update(user._id, {
+                                    $pull: {
+                                        subscriptions: {
+                                            _id: video.user._id,
+                                        }
+                                    }
+                                }).then(() => {
+                                    userRepository.updateMany({
+                                        'subscriptions._id': video.user._id
+                                    }, {
+                                        $inc: {
+                                            'subscriptions.$.subscribers': -1,
+                                        }
+                                    });
+                                });
                             });
 
                             videoRepository.findAndUpdate(req.body.videoId, {
@@ -197,53 +207,62 @@ export default class UserController {
                                 }
                             }, {
                                 returnOriginal: false
-                            }).then(userData => {
-                                userRepository.update(req.session.user_id, {
-                                    $push: {
-                                        subscriptions: {
-                                            _id: video.user._id,
-                                            name: video.user.name,
-                                            subscribers: userData.subscribers.length,
-                                            image: userData.image
-                                        }
+                            }).then(userUpdated => {
+                                userRepository.updateMany({
+                                    'subscriptions._id': video.user._id,
+                                }, {
+                                    $inc: {
+                                        'subscriptions.$.subscribers': 1,
                                     }
-                                }).then(data => {
-                                    videoRepository.findAndUpdate(req.body.videoId, {
-                                        $inc: {
-                                            'user.subscribers': 1
-                                        }
-                                    });
-
-                                    const notificationId = new mongoose.mongo.ObjectId();
-
-                                    userRepository.update(video.user._id, {
+                                }).then(() => {
+                                    userRepository.update(req.session.user_id, {
                                         $push: {
-                                            notification: {
-                                                _id: notificationId,
-                                                type: 'new_subscribe',
-                                                content: 'Đã đăng kí theo dõi kênh của bạn',
-                                                is_read: false,
-                                                user: {
-                                                    _id: user._id,
-                                                    name: user.name,
-                                                    image: user.image,
-                                                }
+                                            subscriptions: {
+                                                _id: video.user._id,
+                                                name: video.user.name,
+                                                subscribers: userUpdated.subscribers.length,
+                                                image: userUpdated.image
                                             }
                                         }
-                                    });
+                                    }).then(data => {
+                                        videoRepository.findAndUpdate(req.body.videoId, {
+                                            $inc: {
+                                                'user.subscribers': 1
+                                            }
+                                        });
+    
+                                        const notificationId = new mongoose.mongo.ObjectId();
+    
+                                        userRepository.update(video.user._id, {
+                                            $push: {
+                                                notification: {
+                                                    _id: notificationId,
+                                                    type: 'new_subscribe',
+                                                    content: 'Đã đăng kí theo dõi kênh của bạn',
+                                                    is_read: false,
+                                                    user: {
+                                                        _id: user._id,
+                                                        name: user.name,
+                                                        image: user.image,
+                                                    }
+                                                }
+                                            }
+                                        });
+    
+                                        res.json({
+                                            status: 'success',
+                                            text: 'Subscribed',
+                                            notificationId: notificationId,
+                                            channelId: video.user._id,
+                                            user: {
+                                                _id: user._id,
+                                                name: user.name,
+                                                image: user.image,
+                                            },
+                                        });
+                                    }).catch(err => console.log(err));
+                                });
 
-                                    res.json({
-                                        status: 'success',
-                                        text: 'Subscribed',
-                                        notificationId: notificationId,
-                                        channelId: video.user._id,
-                                        user: {
-                                            _id: user._id,
-                                            name: user.name,
-                                            image: user.image,
-                                        },
-                                    });
-                                }).catch(err => console.log(err));
                             }).catch(err => console.log(err));
 
                             return;
@@ -262,14 +281,16 @@ export default class UserController {
     editAvatar(req, res) {
         if (req.session.user_id) {
             const errors = useValidationResult(req);
-            
+
             if (errors !== null) {
-                return res.render('/channel/'+req.session.user_id, {
-                    isLogin: true,
+                res.json({
+                    type: 'error',
                     errors: {
                         ...errors,
                     },
                 });
+
+                return false;
             }
 
             const oldPath = req.file.path;
@@ -278,28 +299,49 @@ export default class UserController {
             fse.copyFile(oldPath, newPath).then(() => {
                 userRepository.update(req.session.user_id, {
                     $set: {
-                        image: newPath
+                        image: newPath,
                     }
                 });
-                userRepository.updateWhere({
+
+                userRepository.updateMany({
                     'subscriptions._id': req.session.user_id
                 }, {
                     $set: {
                         'subscriptions.$.image': newPath
                     }
                 });
-                videoRepository.updateWhere({
-                    'user._id': new mongoose.mongo.ObjectId(req.session.user_id)
+
+                // Update avatar on user's video history
+                userRepository.updateMany({
+                    'history.user._id': req.session.user_id,
+                }, {
+                    $set: {
+                        'history.$.user.image': newPath, 
+                    }
+                });
+
+                videoRepository.updateMany({
+                    'user._id': req.session.user_id
                 }, {
                     'user.image': newPath,
                 });
             }).catch(err => `EditAvatar : Error when copy file ${err}`);
             
             fse.removeSync(oldPath);
-            res.redirect('/channel/'+req.session.user_id);
+
+            req.session.user_image = newPath;
+            
+            res.json({
+                type: 'success',
+                channelId: req.session.user_id,
+            });
         } else {
-            res.redirect('/login');
+            res.json({
+                type: 'login',
+            });
         }
+
+        return true;
     }
 
     editCoverAvatar(req, res) {
@@ -307,12 +349,14 @@ export default class UserController {
             const errors = useValidationResult(req);
             
             if (errors !== null) {
-                return res.render('/channel/'+req.session.user_id, {
-                    isLogin: true,
+                res.json({
+                    type: 'error',
                     errors: {
                         ...errors,
                     },
                 });
+
+                return false;
             }
             
             const oldPath = req.file.path;
@@ -327,10 +371,17 @@ export default class UserController {
             }).catch(err => `EditAvatar : Error when copy file ${err}`);
             
             fse.removeSync(oldPath);
-            res.redirect('/channel/'+req.session.user_id);
+
+            res.json({
+                type: 'success',
+            });
         } else {
-            res.redirect('/login');
+            res.json({
+                type: 'login',
+            });
         }
+
+        return true;
     }
 
     subscribedView(req, res) {
@@ -385,22 +436,30 @@ export default class UserController {
                         _id: user._id.toString()
                     }
                 }
-            });
-
-            userRepository.getById(req.body.channelId).then(channel => {
-                userRepository.update(user._id, {
-                    $push: {
-                        subscriptions: {
-                            _id: channel._id.toString(),
-                            name: channel.name,
-                            subscribers: channel.subscribers.length,
-                            image: channel.image,
+            }).then(() => {
+                userRepository.getById(req.body.channelId).then(channel => {
+                    userRepository.updateMany({
+                        'subscriptions._id': channel._id.toString(),
+                    }, {
+                        $inc: {
+                            'subscriptions.$.subscribers': 1,
                         }
-                    }
+                    }).then(() => {
+                        userRepository.update(user._id, {
+                            $push: {
+                                subscriptions: {
+                                    _id: channel._id.toString(),
+                                    name: channel.name,
+                                    subscribers: channel.subscribers.length,
+                                    image: channel.image,
+                                }
+                            }
+                        });
+                    });
                 });
             });
 
-            // Update all video subscribers -1
+            // Update all video subscribers +1
             videoRepository.findWhereAndUpdate({
                 $and: [
                     {
@@ -421,20 +480,28 @@ export default class UserController {
 
     channelUnsubscribe(req, res) {
         userRepository.getById(req.session.user_id).then(user => {
-            userRepository.update(user._id, {
-                $pull: {
-                    subscriptions: {
-                        _id: req.body.channelId,
-                    }
-                }
-            });
-
             userRepository.update(req.body.channelId, {
                 $pull: {
                     subscribers: {
                         _id: user._id.toString()
                     }
                 }
+            }).then(() => {
+                userRepository.updateMany({
+                    'subscriptions._id': req.body.channelId,
+                }, {
+                    $inc: {
+                        'subscriptions.$.subscribers': -1,
+                    }
+                }).then(() => {
+                    userRepository.update(user._id, {
+                        $pull: {
+                            subscriptions: {
+                                _id: req.body.channelId,
+                            }
+                        }
+                    });
+                });
             });
 
             // Update all video subscribers -1

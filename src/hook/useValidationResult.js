@@ -6,9 +6,11 @@ const useValidationResult = (req) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        if (Object.keys(req.files).length > 0) {
-            for (const key in req.files) {
-                fse.removeSync(req.files[key][0].path);
+        if (typeof req.files != 'undefined') {
+            if (Object.keys(req.files).length > 0) {
+                for (const key in req.files) {
+                    fse.removeSync(req.files[key][0].path);
+                }
             }
         }
 
