@@ -6,6 +6,8 @@ import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from '../repositories/VideoRepository.js';
 import useValidationResult from '../hook/useValidationResult.js';
 import useAuthData from '../hook/useAuthData.js';
+import useCloudinary from '../hook/useCloudinary.js';
+import { FOLDER } from '../config/constraint.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -293,13 +295,22 @@ export default class UserController {
                 return false;
             }
 
-            const oldPath = req.file.path;
-            const newPath = `public/profiles/${req.session.user_id}-${req.file.originalname}`;
+            const filePath = req.file.path;
 
-            fse.copyFile(oldPath, newPath).then(() => {
+            fse.chmodSync(filePath, 0o775);
+
+            useCloudinary().uploader.upload(filePath, {
+                public_id: `${req.session.user_id}-${req.file.originalname}`,
+                display_name: `${req.session.user_id}-${req.file.originalname}`,
+                folder: FOLDER.profile,
+            }, function (err, file) {
+                if (err != null) {
+                    console.log(err);
+                }
+
                 userRepository.update(req.session.user_id, {
                     $set: {
-                        image: newPath,
+                        image: file.url,
                     }
                 });
 
@@ -307,7 +318,7 @@ export default class UserController {
                     'subscriptions._id': req.session.user_id
                 }, {
                     $set: {
-                        'subscriptions.$.image': newPath
+                        'subscriptions.$.image': file.url
                     }
                 });
 
@@ -316,24 +327,24 @@ export default class UserController {
                     'history.user._id': req.session.user_id,
                 }, {
                     $set: {
-                        'history.$.user.image': newPath, 
+                        'history.$.user.image': file.url, 
                     }
                 });
 
                 videoRepository.updateMany({
                     'user._id': req.session.user_id
                 }, {
-                    'user.image': newPath,
+                    'user.image': file.url,
                 });
-            }).catch(err => `EditAvatar : Error when copy file ${err}`);
-            
-            fse.removeSync(oldPath);
 
-            req.session.user_image = newPath;
-            
-            res.json({
-                type: 'success',
-                channelId: req.session.user_id,
+                fse.removeSync(filePath);
+
+                req.session.user_image = file.url;
+
+                res.json({
+                    type: 'success',
+                    channelId: req.session.user_id,
+                });
             });
         } else {
             res.json({
@@ -359,21 +370,31 @@ export default class UserController {
                 return false;
             }
             
-            const oldPath = req.file.path;
-            const newPath = `public/covers/${req.session.user_id}-${req.file.originalname}`;
+            const filePath = req.file.path;
 
-            fse.copyFile(oldPath, newPath).then(() => {
+            fse.chmodSync(filePath, 0o775);
+
+            useCloudinary().uploader.upload(filePath, {
+                public_id: `${req.session.user_id}-${req.file.originalname}`,
+                display_name: `${req.session.user_id}-${req.file.originalname}`,
+                folder: FOLDER.cover,
+            }, 
+            function(error, result) {
+                if (error != null) {
+                    console.log(error);
+                }
+                
                 userRepository.update(req.session.user_id, {
                     $set: {
-                        coverPhoto: newPath
+                        coverPhoto: result.url,
                     }
                 });
-            }).catch(err => `EditAvatar : Error when copy file ${err}`);
-            
-            fse.removeSync(oldPath);
-
-            res.json({
-                type: 'success',
+                
+                fse.removeSync(filePath);
+                
+                res.json({
+                    type: 'success',
+                });
             });
         } else {
             res.json({

@@ -5,6 +5,8 @@ import useValidationResult from '../hook/useValidationResult.js';
 import UserRepository from '../repositories/UserRepository.js';
 import VideoRepository from "../repositories/VideoRepository.js";
 import useAuthData from '../hook/useAuthData.js';
+import useCloudinary from '../hook/useCloudinary.js';
+import { FOLDER } from '../config/constraint.js';
 
 const userRepository = new UserRepository();
 const videoRepository = new VideoRepository();
@@ -37,27 +39,48 @@ export default class VideoController {
                 });
             }
 
-            const oldPathThumbnail = req.files['thumbnail'][0].path;
-            const pathThumbnail = `public/thumbnails/${new Date().getTime()}-${req.files['thumbnail'][0].originalname}`;
-            const oldPathVideo = req.files['video'][0].path;
-            const pathVideo = `public/videos/${new Date().getTime()}-${req.files['video'][0].originalname}`;
+            const filePathThumbnail = req.files['thumbnail'][0].path;
+            const filePathVideo = req.files['video'][0].path;
 
-            fse.copyFile(oldPathThumbnail, pathThumbnail)
-                .then(() => {
-                    console.log('Thumbnail upload done !');
-                })
-                .catch(err => console.log(`Error when thumbnail rename ${err}`));
-    
-            fse.copyFile(oldPathVideo, pathVideo)
-                .then(() => {
-                    userRepository.getById(req.session.user_id, '_id name email').then(user => {
-                        const currentTime = new Date().getTime();
-    
-                        getVideoDurationInSeconds(pathVideo).then(duration => {
+            fse.chmodSync(filePathThumbnail, 0o775);
+            fse.chmodSync(filePathVideo, 0o775);
+
+            useCloudinary().uploader.upload(filePathThumbnail, {
+                public_id: `${new Date().getTime()}-${req.files['thumbnail'][0].originalname}`,
+                display_name: `${new Date().getTime()}-${req.files['thumbnail'][0].originalname}`,
+                folder: FOLDER.thumbnail,
+            }, function (err, thumbnail) {
+                if (err != null) {
+                    console.log('Error when upload thumbnail');
+                    console.log(err);
+                    return false;
+                }
+
+                useCloudinary().uploader.upload(filePathVideo, {
+                    public_id: `${new Date().getTime()}-${req.files['video'][0].originalname}`,
+                    display_name: `${new Date().getTime()}-${req.files['video'][0].originalname}`,
+                    folder: FOLDER.video,
+                    resource_type: 'video',
+                }, function (err, videoUpload) {
+                    if (err != null) {
+                        console.log('Error when upload video');
+                        console.log(err);
+                        return false;
+                    }
+
+                    const currentTime = new Date().getTime();
+                    
+                    userRepository.getById(req.session.user_id, [
+                        '_id',
+                        'name',
+                        'email',
+                        'image',
+                    ]).then(user => {
+                        getVideoDurationInSeconds(filePathVideo).then(duration => {
                             const hours = Math.floor(duration / 60 / 60);
                             const minutes = Math.floor(duration / 60) - (hours * 60);
                             const seconds = Math.floor(duration % 60);
-    
+                            
                             // Insert in database
                             videoRepository.store({
                                 user: {
@@ -66,8 +89,8 @@ export default class VideoController {
                                     image: user.image,
                                     subscribers: 0,
                                 },
-                                filePath: pathVideo,
-                                thumbnail: pathThumbnail,
+                                filePath: videoUpload.url,
+                                thumbnail: thumbnail.url,
                                 title: req.body.title,
                                 description: req.body.description,
                                 tags: req.body.tags,
@@ -94,17 +117,17 @@ export default class VideoController {
                                         }
                                     }
                                 })
-                                .then(() => console.log(`Update User success !`))
-                                .catch(err => `Error when update user ${err}`);
+                                .then(() => {
+                                    console.log(`Update User success !`);
+                                    fse.removeSync(filePathThumbnail);
+                                    fse.removeSync(filePathVideo);
+                                }).catch(err => `Error when update user ${err}`);
                             })
                             .catch(error => console.log(`Error when store video ${error}`));
                         });
                     });
-                })
-                .catch(err => console.log(`Error when video rename ${err}`));
-
-            fse.removeSync(oldPathThumbnail);
-            fse.removeSync(oldPathVideo);
+                });
+            });
 
             return res.redirect('/upload');
         }

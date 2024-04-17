@@ -33,7 +33,7 @@
         <div class="row">
             <% if (isMyChannel) { %>
                 <img
-                    src="<%= baseUrl + user.coverPhoto %>"
+                    src="<%= user.coverPhoto %>"
                     class="img-fluid cover-photo"
                     style="cursor: pointer;"
                     onerror="this.src = 'http://placehold.it/1900x250'"
@@ -41,7 +41,7 @@
                 >
             <% } else { %>
                 <img
-                    src="<%= baseUrl + user.coverPhoto %>"
+                    src="<%= user.coverPhoto %>"
                     class="img-fluid cover-photo"
                     onerror="this.src = 'http://placehold.it/1900x250'"
                 >
@@ -53,7 +53,7 @@
                 <div class="col-md-2">
                     <% if (isMyChannel) { %>
                         <img
-                            src="<%= baseUrl + user.image %>"
+                            src="<%= user.image %>"
                             class="img-fluid profile-photo"
                             style="cursor: pointer;"
                             onerror="this.src = 'http://placehold.it/150x150'"
@@ -61,7 +61,7 @@
                         >
                     <% } else { %>
                         <img
-                            src="<%= baseUrl + user.image %>"
+                            src="<%= user.image %>"
                             class="img-fluid profile-photo"
                             onerror="this.src = 'http://placehold.it/150x150'"
                         >
@@ -180,7 +180,7 @@
                             <div class="video-wrap">
                                 <div class="thumbnail-video-wrap">
                                     <img
-                                        src="<%= baseUrl + video.thumbnail %>"
+                                        src="<%= video.thumbnail %>"
                                         alt="videos"
                                         class="card-img-top"
                                     >
@@ -190,7 +190,7 @@
                                 <div class="video-info-wrap">
                                     <div class="video-info-channel">
                                         <img
-                                            src="<%= baseUrl + user.image %>"
+                                            src="<%= user.image %>"
                                             onerror="this.src = 'http://placehold.it/150x150'"
                                             class="circle-bars avatar-bars"
                                             data-channel-id="<%= user._id %>"

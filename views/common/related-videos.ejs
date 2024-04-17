@@ -29,7 +29,7 @@
 
                 date = date.padStart(2, '0') + ' ' + months[createdAt.getMonth()] + ", " + createdAt.getFullYear();
                 html += '<div>';
-                html += `<img class="img-fluid" src="${baseUrl}${video.thumbnail}" />`;
+                html += `<img class="img-fluid" src="${video.thumbnail}" />`;
                 html += `<p>${video.minutes}:${video.seconds}</p>`;
                 html += `<h3><a href="/watch/${video.watch}">${video.title}</a></h3>`;
                 html += '</div>';
