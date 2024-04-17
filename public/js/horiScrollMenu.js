@@ -84,14 +84,3 @@ rightArrow.addEventListener('click', () => requestAnimationFrame(
 leftArrow.addEventListener('click', () => requestAnimationFrame(
 	timestamp => animationFramesSetup(timestamp, distanceInPixels)
 ));
-
-console.log(`Menu wrapper size : ${menuWrapperSize}`);
-console.log(menuSize);
-console.log(menuInvisibleSize);
-console.log(arrowSize);
-console.log(menuEndOffset);
-console.log(itemsCount);
-console.log(itemSize);
-console.log(itemsSpaceBetween);
-console.log(distanceInPixels);
-console.log(durationInMilliseconds);
