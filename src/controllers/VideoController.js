@@ -936,14 +936,14 @@ export default class VideoController {
     search(req, res) {
         videoRepository.findMany({
             title: {
-                $regex: req.query.title
+                $regex: req.query.title,
             }
         }).then(videos => {
             console.log(videos);
             res.render('video/search', {
                 isLogin: req.session.user_id ? true : false,
                 videos: videos,
-                query: req.query.title
+                auth: useAuthData(req.session),
             });
         }).catch(err => console.log(`search : Error when get videos ${err}`));
     }

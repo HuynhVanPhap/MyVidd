@@ -16,12 +16,13 @@
                 <div class="row">
                     <div class="col-md-12">
                         <video
-                            id="videoPlayer"
                             controls
-                            style="width: 100%; border-radius: 10px;"
+                            id="videoPlayer"
+                            class="video-watch"
                             poster="<%= video.thumbnail %>"
                         >
-                            <source src="<%= baseUrl + 'video/get/' + video._id %>" type="video/mp4">
+                            <!-- <source src="<%= baseUrl + 'video/get/' + video._id %>" type="video/mp4"> -->
+                            <source src="<%= video.filePath %>" type="video/mp4">
                         </video>
                     </div>
                 </div>
@@ -77,16 +78,12 @@
                     </div>
                 </div>
 
-                <hr>
-
-                <p class="text-center">
+                <!-- <p class="text-center">
                     <b>Category : </b>
                     <a href="/video/search/category/<%= video.category %>">
                         <%= video.category %>
                     </a>
-                </p>
-
-                <hr>
+                </p> -->
 
                 <%- include('../common/comment') %>
             </div>
