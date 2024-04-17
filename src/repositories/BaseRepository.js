@@ -15,8 +15,8 @@ export default class BaseRepository {
         return await this.model.create(params);
     }
 
-    async getById(id, select = '') {
-        return await this.model.findOne({ _id: id }, select).exec();
+    async getById(id, select = ['']) {
+        return await this.model.findOne({ _id: id }).select(select.join(' ')).exec();
     }
 
     async getWhere(where) {

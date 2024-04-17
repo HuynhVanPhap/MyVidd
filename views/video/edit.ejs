@@ -10,7 +10,7 @@
             <div class="col-md-12">
                 <form action="/video/edit" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="videoId" value="<%= video._id %>">
-                    <img class="img-fluid" src="<%= baseUrl + video.thumbnail %>">
+                    <img class="img-fluid" src="<%= video.thumbnail %>">
                     <div class="form-group">
                         <label>Select Thumbnail</label>
                         <input type="file" name="thumbnail" class="form-control-file" accept="image/*">

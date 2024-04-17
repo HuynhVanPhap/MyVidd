@@ -5,7 +5,7 @@
             <% videos.forEach(video => { %>
                 <div class="col-md-3 mb-4">
                     <div class="card h-100">
-                        <img src="<%= baseUrl + video.thumbnail %>" class="card-img-top" style="height: 300px; object-fit: cover;">
+                        <img src="<%= video.thumbnail %>" class="card-img-top" style="height: 300px; object-fit: cover;">
                         <p><%= video.minutes + ':' + video.seconds %></p>
                         <div class="card-body">
                             <h4 class="card-title"><%= video.title %></h4>

@@ -19,7 +19,7 @@
                             id="videoPlayer"
                             controls
                             style="width: 100%; border-radius: 10px;"
-                            poster="<%= baseUrl + video.thumbnail %>"
+                            poster="<%= video.thumbnail %>"
                         >
                             <source src="<%= baseUrl + 'video/get/' + video._id %>" type="video/mp4">
                         </video>
@@ -35,7 +35,7 @@
                             <div class="video-header__action">
                                 <div class="video-header__action-channel">
                                     <img
-                                        src="<%= baseUrl + video.user.image %>"
+                                        src="<%= video.user.image %>"
                                         onerror="this.src = 'http://placehold.it/150x150'"
                                         class="circle-bars"
                                         data-channel-id="<%= video.user._id %>"
