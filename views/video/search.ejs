@@ -1,6 +1,11 @@
 <%- include("../layouts/header") %>
     <div class="container my-4">
         <div class="row">
+            <% if (videos.length === 0) { %>
+                <div class="col-md-12 mb-4">
+                    <span>😥 Thậc tiếc ! Chúng tôi không tìm thấy kết quả cho <b>"<%= querySearch %>"</b></span>
+                </div>
+            <% } %>
             <% videos.forEach(video => { %>
                 <div class="col-md-12 mb-4">
                     <a href="/watch/<%= video.watch %>" class="clear-href">

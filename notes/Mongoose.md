@@ -82,3 +82,24 @@
 *
 * https://www.mongodb.com/docs/manual/reference/operator/query/
 */
+
+/**
+* # Text Index (full-text search)
+*
+* Là một loại index được thiết kế để tối ưu hóa việc tìm kiếm trong các tài liệu văn bản.
+* Text index có thể lưu trữ và phân tích các từ, cụm từ, và các yếu tố ngữ nghĩa khác trong
+* tài liệu để giúp tìm kiếm nhanh chóng và chính xác hơn.
+*
+* https://www.mongodb.com/docs/manual/core/indexes/index-types/index-text/#std-label-index-type-text
+* https://www.mongodb.com/docs/manual/reference/operator/query/text/
+*/
+
+/**
+* # Search Index
+*
+* Là một cấu trúc dữ liệu được sử dụng để tăng tốc độ tìm kiếm dữ liệu trong một tập dữ liệu lớn.
+* Search index có thể được sử dụng để tìm kiếm nhiều loại dữ liệu khác nhau, bao gồm văn bản, số,
+* ngày tháng, v.v.
+*
+* https://www.mongodb.com/docs/atlas/atlas-search/create-index/
+*/
